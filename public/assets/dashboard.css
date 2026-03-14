@@ -1,0 +1,264 @@
+/* Уникальные стили для Dashboard */
+
+.dashboard-page .console-wrapper {
+  max-width: 1200px;
+}
+
+/* Профиль в шапке */
+.user-profile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 15px;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: 0.3s;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.user-profile:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: 35px;
+  height: 35px;
+  border: 1px solid var(--accent-color);
+}
+
+.avatar-wrapper img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.status-online {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  box-shadow: 0 0 5px var(--accent-color);
+  z-index: 2;
+}
+
+.user-info .u-name {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.user-info .u-role {
+  font-size: 0.6rem;
+  color: var(--accent-color);
+  opacity: 0.7;
+}
+
+/* Выпадающее меню */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 200px;
+  background: #000;
+  border: 1px solid var(--accent-color);
+  display: none; /* Скрыто по дефолту */
+  flex-direction: column;
+  z-index: 1001;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
+}
+
+.dropdown-menu.show {
+  display: flex;
+}
+
+.menu-header {
+  padding: 10px;
+  font-size: 0.6rem;
+  color: #444;
+  border-bottom: 1px solid #222;
+}
+
+.menu-item {
+  padding: 12px 15px;
+  text-decoration: none;
+  color: var(--text-color);
+  font-size: 0.75rem;
+  transition: 0.2s;
+}
+
+.menu-item:hover {
+  background: var(--accent-color);
+  color: #000;
+}
+
+.menu-divider {
+  height: 1px;
+  background: #222;
+}
+
+.logout {
+  color: #ff3333 !important;
+}
+.logout:hover {
+  background: #ff3333 !important;
+  color: #fff !important;
+}
+
+/* Секция ввода */
+.cmd-section {
+  margin-bottom: 40px;
+}
+
+.cmd-form {
+  padding: 15px 25px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.cmd-form input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #222;
+  color: #fff;
+  font-family: inherit;
+  outline: none;
+  padding: 5px 0;
+}
+
+.btn-execute.mini {
+  width: auto;
+  padding: 5px 20px;
+  font-size: 0.7rem;
+}
+
+/* Сетка карточек */
+.grid-label {
+  margin-bottom: 20px;
+  font-size: 0.8rem;
+  color: #444;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px; /* Отступы между карточками */
+  margin-bottom: 100px;
+}
+
+.product-card {
+  background: #000;
+  border: 1px solid #222;
+  position: relative;
+  transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card:hover {
+  border-color: var(--accent-color);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 255, 65, 0.05);
+}
+
+.card-edge {
+  height: 2px;
+  background: #222;
+  width: 100%;
+  transition: 0.3s;
+}
+
+.product-card:hover .card-edge {
+  background: var(--accent-color);
+  box-shadow: 0 0 10px var(--accent-color);
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.product-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.product-img {
+  height: 150px;
+  background: #050505;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #111;
+}
+
+.product-img img {
+  max-width: 80%;
+  filter: grayscale(1);
+  transition: 0.3s;
+}
+.product-card:hover .product-img img {
+  filter: grayscale(0);
+}
+
+.product-title {
+  font-size: 0.9rem;
+  margin: 0 0 15px 0;
+  height: 2.4em;
+  overflow: hidden;
+}
+
+.price-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 20px;
+}
+
+.price-current {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.price-status.down {
+  color: #ff3333;
+  font-size: 0.75rem;
+}
+
+/* Кнопки карточек */
+.card-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.action-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid #333;
+  color: #888;
+  padding: 8px;
+  font-family: inherit;
+  font-size: 0.65rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.action-btn:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.action-btn.danger:hover {
+  border-color: #ff3333;
+  color: #ff3333;
+}

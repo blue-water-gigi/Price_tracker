@@ -1,0 +1,23 @@
+# Composer
+/vendor/
+# Environment
+.env
+.env.local
+.env.*.local
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+# OS
+.DS_Store
+Thumbs.db
+# Logs
+*.log
+/storage/logs/
+
+# Other trash
+BD_scheme.drawio
+Project_structure.drawio
+PARSE_PLAN.drawio
+PARSER_STRUCTURE.htmldf
