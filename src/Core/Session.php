@@ -48,7 +48,7 @@ class Session
         $_SESSION['_flash'][$key] = $value;
     }
 
-    public static function getFlash(string $key, mixed $default = null): ?array
+    public static function getFlash(string $key, mixed $default = null): array | string | null
     {
         $value = $_SESSION['_flash'][$key] ?? $default;
         unset($_SESSION['_flash'][$key]);

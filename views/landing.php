@@ -46,15 +46,19 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="card-label">Добавь ссылку на товар с маркетплейса</div>
-                <div style="color: var(--accent-color);" class="card-value">yandex_market, wildberies, ozon</div>
+                <div>wildberies, telegram</div>
             </div>
             <div class="stat-card">
                 <div class="card-label">Получай уведомления об изменениях цены</div>
-                <div style="color: var(--accent-color);" class="card-value">telegram, email, phone</div>
+                <div>telegram, email, phone</div>
             </div>
             <div class="stat-card">
                 <div class="card-label">Сравнивай цены на один и тот же товар с разных маркетплейсов</div>
-                <div style="color: var(--accent-color);" class="card-value"></div>
+                <div>Выбирай самое выгодное предложение</div>
+            </div>
+            <div class="stat-card">
+                <div class="card-label">Просматривай историю изменения цен</div>
+                <div>Покупай в нужный момент</div>
             </div>
         </div>
     </main>

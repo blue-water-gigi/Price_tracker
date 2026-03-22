@@ -37,7 +37,7 @@ class AuthService
             "email" => $email
         ]);
 
-        $userId = $this->db->getLastInsertId();
+        $userId = $this->db->getLastInsertId('users_user_id_seq');
 
         Session::start();
         Session::set('user_id', $userId);

@@ -9,7 +9,7 @@ declare(strict_types=1);
 //     die();
 // }
 
-function convert($value): string
+function convert(mixed $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES, "UTF-8");
 }

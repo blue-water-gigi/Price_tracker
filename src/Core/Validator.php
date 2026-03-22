@@ -64,4 +64,16 @@ class Validator
     {
         return empty($this->errors);
     }
+
+    public function url(string $field)
+    {
+        if (empty($this->getValue($field))) {
+            $this->setError($field, 'Введено пустое поле. Введите ссылку на товар.');
+        }
+
+        if (!filter_var($this->getValue($field), FILTER_VALIDATE_URL)) {
+            $this->setError($field, 'Не валидная ссылка. Убедитесь, что ссылка валидна.');
+        }
+        return $this;
+    }
 }

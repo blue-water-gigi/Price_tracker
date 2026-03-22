@@ -7,5 +7,8 @@ CREATE TABLE alerts (
     threshold_value NUMERIC(10, 2),
     notification_channels JSONB,
     is_active BOOLEAN DEFAULT TRUE,
-    last_triggered_at TIMESTAMP
+    last_triggered_at TIMESTAMP,
+    target_price NUMERIC(10, 2),
+    check_interval INTERVAL,
+    CONSTRAINT unique_user_product_alert UNIQUE(user_id, product_id)
 );

@@ -17,20 +17,30 @@ class AuthController
 
     public function __construct()
     {
+        //todo make DI container for Controllers
         $this->authService = new AuthService(db: Database::getInstance());
         $this->validator = new Validator($_POST);
     }
 
     public function showLanding(): void
     {
+        if (Session::isLoggedIn()) {
+            $this->redirect('/dashboard');
+        }
         require self::basePath('/views/landing.php');
     }
     public function showRegister(): void
     {
+        if (Session::isLoggedIn()) {
+            $this->redirect('/dashboard');
+        }
         require self::basePath('/views/auth/register.php');
     }
     public function showLogin(): void
     {
+        if (Session::isLoggedIn()) {
+            $this->redirect('/dashboard');
+        }
         require self::basePath('/views/auth/login.php');
     }
     public function register(): void

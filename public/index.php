@@ -6,18 +6,13 @@ require_once __DIR__ . "/../vendor/autoload.php";
 
 use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
-use App\Services\Parsers\WbParser;
+use App\Controllers\ProductController;
 use Dotenv\Dotenv;
 use App\Core\Router;
 use App\Core\Session;
 
 $dotenv = Dotenv::createImmutable(__DIR__ . "/../");
 $dotenv->load();
-
-$parser = new WbParser();
-$imgUrl = $parser->getImgUrl('518986553');
-dd($imgUrl);
-
 
 Session::start();
 
@@ -32,5 +27,12 @@ $router->post("/login", [AuthController::class, 'login']);
 
 //dashboard and main
 $router->get("/dashboard", [DashboardController::class, 'showDashboard']);
+$router->get("/logout", [DashboardController::class, 'logout']);
+
+//add-save-cancel
+$router->get("/dashboard/add", [ProductController::class, 'showAddForm']);
+$router->post("/dashboard/add", [ProductController::class, 'add']);
+$router->post("/dashboard/save", [ProductController::class, 'save']);
+$router->get("/dashboard/cancel", [ProductController::class, 'cancel']);
 
 $router->dispatch();

@@ -61,9 +61,9 @@ class Database
         return $this;
     }
 
-    public function getLastInsertId(): string
+    public function getLastInsertId(?string $name = null): string
     {
-        return $this->getPdo()->lastInsertId();
+        return $this->getPdo()->lastInsertId($name);
     }
 
     public function fetch(): mixed
@@ -71,7 +71,7 @@ class Database
         return $this->statement->fetch();
     }
 
-    public function fetchAll(): ?array
+    public function fetchAll(): array
     {
         return $this->statement->fetchAll();
     }

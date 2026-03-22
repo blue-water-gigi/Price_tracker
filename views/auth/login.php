@@ -5,10 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SYS_AUTH // ACCESS</title>
-    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="/assets/style.css">
 </head>
 
-<body>
+<body class="dashboard-page">
+    <div class="scanlines"></div>
 
     <div class="scanlines"></div>
 
