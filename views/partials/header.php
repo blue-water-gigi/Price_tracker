@@ -18,7 +18,7 @@
             </div>
             <div class="dropdown-menu" id="profileMenu">
                 <div class="menu-header">// SESSION_CONTROLS</div>
-                <a href="/settings" class="menu-item">SETTINGS.EXE</a>
+                <a href="/dashboard/settings" class="menu-item">SETTINGS.EXE</a>
                 <a href="/logs" class="menu-item">SYSTEM_LOGS</a>
                 <div class="menu-divider"></div>
                 <a href="/logout" class="menu-item logout">TERMINATE_SESSION</a>

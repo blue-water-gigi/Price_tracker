@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Core\Session;
 use App\Models\Product;
+use App\Models\User;
 use App\Database\Database;
 
 class DashboardController
@@ -25,7 +26,14 @@ class DashboardController
     {
         $this->requireAuth("/login");
         Session::destroy();
-        require_once self::basePath("views/landing.php");
-        exit();
+        $this->redirect('/');
+    }
+
+    public function showSettings(): void
+    {
+        $this->requireAuth('/login');
+        $user_id = (int) Session::get('user_id');
+        $tg_chat_id = new User(Database::getInstance())->getTgChatId($user_id);
+        require_once self::basePath('views/dashboard/settings.php');
     }
 }

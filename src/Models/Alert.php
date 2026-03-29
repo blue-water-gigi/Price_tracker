@@ -17,18 +17,20 @@ class Alert
         string $alert_type,
         float $threshold_value,
         array $notif_channels,
-        string $check_interval
+        string $check_interval,
+        float $target_price,
     ): array {
         return $this->db->query("INSERT INTO alerts(
-        user_id,product_id,type,threshold_value,notification_channels,check_interval)
-        VALUES (:user_id,:product_id,:type,:threshold_value,:notification_channels,:check_interval)
+        user_id,product_id,type,threshold_value,notification_channels,check_interval,target_price)
+        VALUES (:user_id,:product_id,:type,:threshold_value,:notification_channels,:check_interval,:target_price)
         RETURNING *", [
             'user_id' => $user_id,
             'product_id' => $product_id,
             'type' => $alert_type,
             'threshold_value' => round($threshold_value, 2),
             'notification_channels' => json_encode($notif_channels),
-            'check_interval' => $check_interval
+            'check_interval' => $check_interval,
+            'target_price' => $target_price
         ])->fetch();
     }
 
@@ -48,5 +50,38 @@ class Alert
         $this->db->query("UPDATE alerts SET last_triggered_at = NOW() WHERE alert_id = :alert_id", [
             "alert_id" => $alert_id
         ]);
+    }
+
+    public function updateLastChecked(int $alert_id): void
+    {
+        $this->db->query("UPDATE alerts SET last_checked_at = NOW() WHERE alert_id = :alert_id", [
+            'alert_id' => $alert_id
+        ]);
+    }
+
+    public function updateAlerts(
+        int $product_id,
+        int $user_id,
+        string $alert_type,
+        float $threshold_value,
+        array $notif_channels,
+        string $check_interval,
+        float $target_price,
+    ): int {
+        return $this->db->query("UPDATE alerts
+        SET type = :alert_type,
+        threshold_value = :threshold_value, 
+        notification_channels = :notification_channels,
+        target_price = :target_price,
+        check_interval = :check_interval
+        WHERE product_id = :product_id AND user_id = :user_id", [
+            "product_id" => $product_id,
+            "user_id" => $user_id,
+            "alert_type" => $alert_type,
+            "threshold_value" => round($threshold_value, 2),
+            "notification_channels" => json_encode($notif_channels),
+            "check_interval" => $check_interval,
+            "target_price" => $target_price
+        ])->countRows();
     }
 }

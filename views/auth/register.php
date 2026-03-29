@@ -48,7 +48,7 @@
                         <label>USERNAME:</label>
                         <div class="input-wrapper">
                             <span class="prompt">></span>
-                            <input value="<?= convert($old['email'] ?? '') ?>" type="text" name="username" required placeholder="Admin">
+                            <input value="<?= convert($old['username'] ?? '') ?>" type="text" name="username" required placeholder="Admin">
                         </div>
                     </div>
 

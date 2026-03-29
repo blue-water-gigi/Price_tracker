@@ -43,11 +43,27 @@ class Router
     {
         $this->addRoute('POST', $path, $handler);
     }
+    public function delete(string $path, array|callable $handler): void
+    {
+        $this->addRoute('DELETE', $path, $handler);
+    }
+    public function patch(string $path, array|callable $handler): void
+    {
+        $this->addRoute('PATCH', $path, $handler);
+    }
+    public function put(string $path, array|callable $handler): void
+    {
+        $this->addRoute('PUT', $path, $handler);
+    }
 
     public function dispatch(): void
     {
         $method = $_SERVER['REQUEST_METHOD'];
         $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        if ($method === 'POST' && isset($_POST['_method'])) {
+            $method = strtoupper($_POST['_method']);
+        }
 
         foreach ($this->routes as $route) {
             if ($route['method'] !== $method) {

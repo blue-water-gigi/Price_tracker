@@ -26,30 +26,46 @@ class PriceCheckService
     ) {}
 
 
-    public function run(): void
+    public function run(): array
     {
         $products = $this->product->getAllActive();
+
+        $stats = [
+            'total' => count($products),
+            'updated' => 0,
+            'errors' => 0,
+            'no_change' => 0
+        ];
+
         foreach ($products as $product) {
-            $this->checkProduct($product);
+            $status = $this->checkProduct($product);
+
+            if (isset($stats[$status])) {
+                $stats[$status]++;
+            }
         }
+
+        return $stats;
     }
 
-    private function checkProduct(array $product): void
+    private function checkProduct(array $product): string
     {
         try {
-            $parser = ParserFactory::make($product['url']);
-            $parsed = $parser->parse($product['url']);
+            $parsed = ParserFactory::make($product['url'])->parse($product['url']);
+
+            $this->alertService->markChecked((int) $product['product_id']);
 
             // if abs diff less then one then we state that theres no changes were made
             if (abs($parsed['price'] - (float) $product['current_price']) < 1) {
-                return;
+                return 'no_change';
             }
-
             $this->history->create($product['product_id'], $parsed['price']);
             $this->product->updatePrice($parsed['price'], $product['product_id']);
             $this->alertService->check($product, (float) $product['current_price'], $parsed['price']);
+            return 'updated';
         } catch (Exception $e) {
             error_log("Price check failed for product: {$product['product_id']}. " . $e->getMessage());
+            return 'error';
         }
     }
 }

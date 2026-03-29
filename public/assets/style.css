@@ -730,6 +730,7 @@ body::before {
     var(--shadow-glow),
     0 24px 64px rgba(0, 0, 0, 0.8);
   width: 100%;
+  max-width: 480px;
   animation: window-in 0.35s ease both;
 }
 
@@ -1366,23 +1367,26 @@ body::before {
 
 /* Animated threshold input reveal */
 .threshold-input-wrap {
-  overflow: hidden;
+  overflow: visible;
   max-height: 0;
   opacity: 0;
   transform: translateY(-4px);
   transition:
-    max-height 0.28s ease,
-    opacity 0.2s ease,
-    transform 0.2s ease;
+    max-height 0.32s ease,
+    opacity 0.22s ease,
+    transform 0.22s ease;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  /* clip via wrapper, not overflow:hidden which cuts children */
+  clip-path: inset(0 0 0 0);
 }
 
 .threshold-input-wrap.visible {
-  max-height: 120px;
+  max-height: 240px;
   opacity: 1;
   transform: translateY(0);
+  clip-path: none;
 }
 
 .threshold-input-wrap > label {
@@ -1750,4 +1754,891 @@ body::before {
   .hero-title {
     font-size: 2rem;
   }
+}
+
+/* ============================================================
+      RANGE SLIDER — Terminal-Luxe
+      ============================================================ */
+
+/* Блок слайдера */
+.slider-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+/* Верхняя строка: лейбл слева, live-значение справа */
+.slider-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.slider-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Бейдж с текущим значением */
+.slider-value-badge {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: var(--accent);
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
+  letter-spacing: 0.04em;
+  min-width: 80px;
+  text-align: right;
+  transition: color 0.15s;
+}
+
+/* Трек + thumb */
+.terminal-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--text-dim);
+  outline: none;
+  cursor: pointer;
+  border: none;
+  /* заполненная часть через CSS custom property */
+  background: linear-gradient(
+    to right,
+    var(--accent) 0%,
+    var(--accent) var(--val, 0%),
+    var(--text-dim) var(--val, 0%),
+    var(--text-dim) 100%
+  );
+  transition: background 0.1s;
+}
+
+.terminal-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
+  cursor: pointer;
+  transition:
+    box-shadow 0.15s,
+    transform 0.15s;
+}
+
+.terminal-range::-webkit-slider-thumb:hover,
+.terminal-range:active::-webkit-slider-thumb {
+  box-shadow: 0 0 14px rgba(0, 255, 65, 0.8);
+  transform: scale(1.2);
+}
+
+.terminal-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
+  cursor: pointer;
+  border-radius: 0;
+  transition:
+    box-shadow 0.15s,
+    transform 0.15s;
+}
+
+.terminal-range::-moz-range-track {
+  height: 4px;
+  background: var(--text-dim);
+}
+
+/* Подписи min/max под треком */
+.slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  margin-top: -2px;
+}
+
+/* Строка ручного ввода под слайдером */
+.slider-manual-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.slider-manual-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+/* Разделительная полоска между блоками формы */
+.form-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.25rem 0;
+}
+
+/* target_price блок — всегда виден */
+.target-price-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+/* ============================================================
+      SETTINGS PAGE
+      ============================================================ */
+
+/* Главная сетка: сайдбар + контент */
+.settings-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (min-width: 2000px) {
+  .settings-layout {
+    grid-template-columns: 260px 1fr;
+  }
+}
+@media (max-width: 860px) {
+  .settings-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Сайдбар навигации ─────────────────────────────────────── */
+.settings-nav {
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  overflow: hidden;
+  position: sticky;
+  top: 84px;
+}
+
+.settings-nav-header {
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  letter-spacing: 0.14em;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.settings-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.07em;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all var(--transition);
+  user-select: none;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.05);
+}
+
+.settings-nav-item:last-child {
+  border-bottom: none;
+}
+
+.settings-nav-item:hover {
+  background: rgba(0, 255, 65, 0.05);
+  color: var(--accent);
+  border-left-color: var(--accent-dim);
+}
+
+.settings-nav-item.active {
+  background: rgba(0, 255, 65, 0.08);
+  color: var(--accent);
+  border-left-color: var(--accent);
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+}
+
+.settings-nav-icon {
+  font-size: 0.78rem;
+  opacity: 0.55;
+  flex-shrink: 0;
+  display: inline-block;
+  line-height: 1;
+  transition:
+    transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.2s,
+    color 0.2s;
+}
+
+.settings-nav-item.active .settings-nav-icon {
+  transform: rotate(90deg);
+  opacity: 1;
+  color: var(--accent);
+}
+
+/* ── Контент: панели ───────────────────────────────────────── */
+.settings-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.settings-panel {
+  display: none;
+  animation: fade-up 0.25s ease both;
+}
+
+.settings-panel.active {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Секция внутри панели ──────────────────────────────────── */
+.settings-section {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+}
+
+.settings-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.settings-section-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.14em;
+}
+
+.settings-section-body {
+  padding: 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* ── Строка поля: label + input в одну линию на широких ───── */
+.settings-field {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .settings-field {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
+.settings-field-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+}
+
+.settings-field-value {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+}
+
+/* ── Кнопка сохранения секции ──────────────────────────────── */
+.settings-save-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Inline статус после сохранения */
+.save-status {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.save-status.visible {
+  opacity: 1;
+}
+.save-status.ok {
+  color: var(--accent);
+}
+.save-status.err {
+  color: var(--accent-danger);
+}
+
+/* ── Telegram connect block ────────────────────────────────── */
+.tg-connect-block {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tg-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+
+.tg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tg-dot.connected {
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+  animation: pulse-status 2s infinite;
+}
+.tg-dot.disconnected {
+  background: var(--text-dim);
+}
+
+/* TG status text color */
+.tg-status-text.connected {
+  color: var(--accent);
+  text-shadow: 0 0 6px rgba(0, 255, 65, 0.3);
+}
+.tg-status-text.disconnected {
+  color: var(--text-muted);
+}
+
+.tg-username {
+  color: var(--accent);
+  font-size: 0.75rem;
+}
+
+/* ── Код привязки ──────────────────────────────────────────── */
+.tg-code-block {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.tg-code-block.visible {
+  display: flex;
+}
+
+.tg-code-display {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid var(--border-bright);
+  padding: 12px 16px;
+  background: rgba(0, 255, 65, 0.04);
+}
+
+.tg-code-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--accent);
+  text-shadow: 0 0 12px rgba(0, 255, 65, 0.5);
+  letter-spacing: 0.2em;
+  flex: 1;
+}
+
+.tg-copy-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.tg-copy-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tg-code-hint {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+}
+
+/* ── Password strength bar ─────────────────────────────────── */
+.password-strength {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.strength-track {
+  height: 3px;
+  background: var(--text-dim);
+  position: relative;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  width: 0%;
+  transition:
+    width 0.3s ease,
+    background 0.3s ease;
+  background: var(--accent-danger);
+}
+
+.strength-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+/* ── Avatar в настройках ───────────────────────────────────── */
+.settings-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.settings-avatar {
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--accent-dim);
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.settings-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.settings-avatar-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-avatar-name {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
+}
+
+.settings-avatar-meta {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+/* ── Mobile overrides ──────────────────────────────────────── */
+@media (max-width: 860px) {
+  .settings-nav {
+    position: static;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .settings-nav-header {
+    display: none;
+  }
+  .settings-nav-item {
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 16px;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    font-size: 0.68rem;
+    flex-shrink: 0;
+  }
+  .settings-nav-item.active {
+    border-bottom-color: var(--accent);
+    border-left: none;
+  }
+  .settings-section-body {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tg-connect-block {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .settings-save-row {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .settings-save-row .btn-execute {
+    width: 100%;
+  }
+}
+
+.tg-dot.connected {
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+  animation: pulse-status 2s infinite;
+}
+.tg-dot.disconnected {
+  background: var(--text-dim);
+}
+
+.tg-status-text {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  transition:
+    color 0.2s,
+    text-shadow 0.2s;
+}
+
+.tg-status-text.connected {
+  color: var(--accent);
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.35);
+  font-weight: bold;
+}
+
+.tg-status-text.disconnected {
+  color: var(--text-muted);
+}
+
+/* Кнопка отвязать — красноватая */
+.btn-execute.danger-btn {
+  border-color: var(--accent-danger);
+  color: var(--accent-danger);
+}
+.btn-execute.danger-btn::before {
+  background: var(--accent-danger);
+}
+.btn-execute.danger-btn:hover {
+  color: var(--bg);
+  box-shadow: 0 0 20px rgba(255, 58, 58, 0.3);
+}
+/* ============================================================
+      DASHBOARD — GROUPS & ENHANCED CARDS
+      ============================================================ */
+
+/* ── Toolbar: строка над сеткой ────────────────────────────── */
+.dashboard-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Фильтр-таблетки групп ─────────────────────────────────── */
+.group-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.group-filter-btn {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  background: transparent;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  position: relative;
+}
+
+.group-filter-btn:hover {
+  color: var(--text-secondary);
+  border-color: var(--accent-dim);
+}
+
+.group-filter-btn.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(0, 255, 65, 0.07);
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+}
+
+.group-filter-btn .group-count {
+  margin-left: 6px;
+  font-size: 0.6rem;
+  opacity: 0.6;
+}
+
+/* Кнопка создания группы */
+.group-create-btn {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: var(--accent-dim);
+  border: 1px dashed rgba(0, 255, 65, 0.25);
+  background: transparent;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.group-create-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Модалка создания группы ───────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(2px);
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-box {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-bright);
+  box-shadow:
+    var(--shadow-glow),
+    0 24px 60px rgba(0, 0, 0, 0.9);
+  width: 100%;
+  max-width: 400px;
+  margin: 1rem;
+  animation: window-in 0.25s ease both;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-title {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.14em;
+  margin-bottom: 0.25rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.modal-actions .btn-execute {
+  flex: 2;
+  padding: 10px;
+}
+
+.modal-cancel-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  padding: 10px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.modal-cancel-btn:hover {
+  border-color: var(--accent-danger);
+  color: var(--accent-danger);
+}
+
+/* ── Карточка товара — обновлённая ─────────────────────────── */
+.product-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
+  /* скрытие по группе */
+}
+
+.product-card.hidden-by-group {
+  display: none;
+}
+
+/* ── Бейдж изменения цены ──────────────────────────────────── */
+.price-delta {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.price-delta.up {
+  color: var(--accent-danger);
+  border: 1px solid rgba(255, 58, 58, 0.22);
+  background: rgba(255, 58, 58, 0.07);
+}
+.price-delta.down {
+  color: var(--accent);
+  border: 1px solid rgba(0, 255, 65, 0.22);
+  background: rgba(0, 255, 65, 0.07);
+}
+.price-delta.flat {
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+/* ── Ссылка на товар ───────────────────────────────────────── */
+.product-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition:
+    color var(--transition),
+    border-color var(--transition);
+  margin-top: auto;
+}
+
+.product-link:hover {
+  color: var(--accent);
+  border-color: rgba(0, 255, 65, 0.3);
+}
+
+/* ── Группа-бейдж на карточке ──────────────────────────────── */
+.card-group-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.1em;
+  color: var(--accent-dim);
+  background: rgba(0, 255, 65, 0.08);
+  border: 1px solid rgba(0, 255, 65, 0.15);
+  padding: 2px 6px;
+  pointer-events: none;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Select группы в карточке (dropdown) ───────────────────── */
+.card-group-select {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  padding: 5px 8px;
+  outline: none;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    color var(--transition);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath fill='%232e6640' d='M0 0l4 5 4-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 22px;
+}
+
+.card-group-select:hover,
+.card-group-select:focus {
+  border-color: var(--accent-dim);
+  color: var(--text-secondary);
+}
+.card-group-select option {
+  background: var(--bg-panel);
+}
+
+/* ── Card actions row ──────────────────────────────────────── */
+.card-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ── "Нет товаров" заглушка ────────────────────────────────── */
+.empty-node {
+  grid-column: 1 / -1;
+  border: 1px dashed var(--border);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  line-height: 2;
 }

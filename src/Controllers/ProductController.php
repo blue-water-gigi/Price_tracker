@@ -35,7 +35,7 @@ class ProductController
         $this->alert = new Alert(Database::getInstance());
     }
 
-    public function showAddForm()
+    public function showAddForm(): void
     {
         $this->requireAuth('/login');
         $pending = Session::get('pending_product');
@@ -45,6 +45,19 @@ class ProductController
 
         $product = $pending['parsed'];
         require_once self::basePath("views/dashboard/add.php");
+    }
+
+    public function showEditForm(string $id): void
+    {
+        $this->requireAuth('/login');
+        $user_id = (int) Session::get('user_id');
+        $product = $this->product->getProduct((int) $id, $user_id);
+
+        if (empty($product)) {
+            $this->redirect('/dashboard');
+        }
+
+        require_once self::basePath("views/dashboard/edit.php");
     }
 
     public function add(): void
@@ -91,9 +104,10 @@ class ProductController
         $user_id = (int) Session::get('user_id');
         $pending = Session::get('pending_product');
         $alert_type = $_POST['alert_type'] ?? 'absolute';
-        $threshold_value = (float) $_POST['threshold_value'] ?? 0;
+        $threshold_value = (float) ($_POST['threshold_value'] ?? 0);
         $notif_channels = $_POST['notify_channels'] ?? [];
         $check_interval = $_POST['check_interval'] ?? '60 minutes';
+        $target_price = (float) ($_POST['target_price'] ?? 0);
 
         if (!$pending) {
             $this->redirect('/dashboard');
@@ -102,7 +116,7 @@ class ProductController
         $store = $this->store->findOrCreate($pending['url']);
         $product = $this->product->findOrCreate($pending['parsed'], $store['store_id'], $user_id, $pending['url']);
         $this->history->create($product['product_id'], (float) $product['current_price']);
-        $this->alert->create($user_id, $product['product_id'], $alert_type, $threshold_value, $notif_channels, $check_interval);
+        $this->alert->create($user_id, $product['product_id'], $alert_type, $threshold_value, $notif_channels, $check_interval, $target_price);
 
         Session::flash('success', 'Товар успешно добавлен!');
         $this->redirect("/dashboard");
@@ -112,6 +126,51 @@ class ProductController
     {
         $this->requireAuth('/login');
         Session::set('pending_product', null);
+        $this->redirect('/dashboard');
+    }
+
+    public function delete(string $id): void
+    {
+        $this->requireAuth('/login');
+
+        $user_id = (int) Session::get('user_id');
+
+        $deleted = $this->product->deleteProduct((int) $id, $user_id);
+        if (!$deleted) {
+            Session::flash('error', 'Товар не найден или нет доступа.');
+            $this->redirect('/dashboard');
+        }
+
+        Session::flash('success', 'Товар успешно удалён!');
+        $this->redirect('/dashboard');
+    }
+
+    public function update(string $id): void
+    {
+        $this->requireAuth('/login');
+
+        $user_id = (int) Session::get('user_id');
+        $alert_type = $_POST['alert_type'] ?? 'absolute';
+        $threshold_value = (float) ($_POST['threshold_value'] ?? 0);
+        $notif_channels = $_POST['notify_channels'] ?? [];
+        $check_interval = $_POST['check_interval'] ?? '60 minutes';
+        $target_price = (float) ($_POST['target_price'] ?? 0);
+
+        $updated = $this->alert->updateAlerts(
+            (int) $id,
+            $user_id,
+            $alert_type,
+            $threshold_value,
+            $notif_channels,
+            $check_interval,
+            $target_price
+        );
+
+        if (!$updated) {
+            Session::flash('error', 'Произошла ошибка, заполните форму корректно');
+        }
+
+        Session::flash('success', 'Уведомления успешно обновлены!');
         $this->redirect('/dashboard');
     }
 }

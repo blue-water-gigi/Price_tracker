@@ -1,1 +1,1 @@
-<script src="/assets/dashboard.js"></script>
+<script src="/assets/app.js"></script>

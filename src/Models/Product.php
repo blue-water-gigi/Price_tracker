@@ -12,6 +12,7 @@ class Product
 
     public function existsForUser(int $user_id, string $url): ?int
     {
+        //todo add article validation (see .todo file)
         $product = $this->db->query("SELECT product_id FROM products WHERE user_id = :user_id AND url = :url", [
             "user_id" => $user_id,
             "url" => $url
@@ -71,6 +72,28 @@ class Product
         FROM products AS p
         INNER JOIN stores AS s
         ON p.store_id = s.store_id
-        WHERE p.is_active = TRUE")->fetchAll() ?? [];
+        INNER JOIN alerts AS a
+        ON a.product_id = p.product_id
+        WHERE p.is_active = TRUE
+        AND a.is_active = TRUE
+        AND (last_checked_at IS NULL OR last_checked_at + check_interval <= NOW())
+        ")->fetchAll() ?? [];
+    }
+
+    public function deleteProduct(int $product_id, int $user_id): int
+    {
+        return $this->db->query("DELETE FROM products WHERE product_id = :product_id AND user_id = :user_id", [
+            'product_id' => $product_id,
+            'user_id' => $user_id
+        ])->countRows();
+    }
+
+    public function getProduct(int $product_id, int $user_id): array
+    {
+        return $this->db->query("SELECT * FROM products 
+        WHERE product_id = :product_id AND user_id = :user_id", [
+            'product_id' => $product_id,
+            'user_id' => $user_id
+        ])->fetch() ?? [];
     }
 }
