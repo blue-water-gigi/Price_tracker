@@ -11,12 +11,13 @@
 
     <main class="console-wrapper">
 
-        <div class="top-nav">
+        <div class="top-nav" style="margin-bottom:0.5rem;">
             <a href="/dashboard" class="nav-btn">
                 << BACK</a>
         </div>
 
-        <div class="grid-label">[ USER_CONFIGURATION // SESSION: <?= strtoupper(App\Core\Session::get('username')) ?> ]</div>
+        <div class="grid-label">[ USER_CONFIGURATION // SESSION: <?= strtoupper(App\Core\Session::get('username')) ?> ]
+        </div>
 
 
         <div class="settings-layout">
@@ -50,14 +51,16 @@
                         <div class="settings-section-body">
                             <div class="settings-avatar-row">
                                 <div class="settings-avatar">
-                                    <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=<?= App\Core\Session::get('username') ?>" alt="avatar">
+                                    <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=<?= App\Core\Session::get('username') ?>"
+                                        alt="avatar">
                                 </div>
                                 <div class="settings-avatar-info">
                                     <div class="settings-avatar-name" id="displayName">
                                         <?= convert(strtoupper(App\Core\Session::get('username'))) ?>
                                     </div>
                                     <div class="settings-avatar-meta">ROOT_PRIVILEGES // ACTIVE_SESSION</div>
-                                    <div class="settings-avatar-meta" id="displayEmail" style="color: var(--text-secondary);">
+                                    <div class="settings-avatar-meta" id="displayEmail"
+                                        style="color: var(--text-secondary);">
                                         <?= convert(App\Core\Session::get('email') ?? '') ?>
                                     </div>
                                 </div>
@@ -108,7 +111,8 @@
                                 <label class="settings-field-label" for="currentPassword">ТЕКУЩИЙ ПАРОЛЬ:</label>
                                 <div class="input-wrapper">
                                     <span class="prompt">></span>
-                                    <input type="password" id="currentPassword" name="current_password" placeholder="••••••••">
+                                    <input type="password" id="currentPassword" name="current_password"
+                                        placeholder="••••••••">
                                 </div>
                             </div>
 
@@ -152,10 +156,10 @@
                 <div class="settings-panel" id="panel-notifications">
 
                     <?php
-                    $userId      = App\Core\Session::get('user_id') ?? '';
+                    $userId = App\Core\Session::get('user_id') ?? '';
                     $botUsername = 'Price_pricerr_bot';
-                    $payload     = base64_encode($userId);
-                    $tgLink      = "https://t.me/{$botUsername}?start={$payload}";
+                    $payload = base64_encode($userId);
+                    $tgLink = "https://t.me/{$botUsername}?start={$payload}";
                     $tgConnected = $tg_chat_id['telegram_chat_id'] !== null;
                     ?>
 
@@ -180,16 +184,14 @@
 
                                 <!-- Кнопка — ссылка на бота -->
                                 <?php if (!$tgConnected): ?>
-                                    <a target="_blank"
-                                        href="<?= convert($tgLink) ?>"
-                                        class="btn-execute"
-                                        style="width:auto; padding: 10px 24px;"
-                                        id="tgConnectBtn">
+                                    <a target="_blank" href="<?= convert($tgLink) ?>" class="btn-execute"
+                                        style="width:auto; padding: 10px 24px;" id="tgConnectBtn">
                                         ПРИВЯЗАТЬ TELEGRAM
                                     </a>
                                 <?php else: ?>
-                                    <span class="settings-field-value" style="color: var(--accent-dim); font-size: 0.78rem;">
-                                        ID: <?= convert((string)$tg_chat_id['telegram_chat_id']) ?>
+                                    <span class="settings-field-value"
+                                        style="color: var(--accent-dim); font-size: 0.78rem;">
+                                        ID: <?= convert((string) $tg_chat_id['telegram_chat_id']) ?>
                                     </span>
                                 <?php endif; ?>
 
@@ -198,8 +200,10 @@
                             <!-- Подсказка если не привязан -->
                             <?php if (!$tgConnected): ?>
                                 <div class="tg-code-hint" style="margin-top: 0.75rem;">
-                                    &gt; Нажмите кнопку — откроется <span style="color:var(--accent);">@<?= $botUsername ?></span><br>
-                                    &gt; Отправьте боту команду <span style="color:var(--accent);">/start</span> — привязка произойдёт автоматически
+                                    &gt; Нажмите кнопку — откроется <span
+                                        style="color:var(--accent);">@<?= $botUsername ?></span><br>
+                                    &gt; Отправьте боту команду <span style="color:var(--accent);">/start</span> — привязка
+                                    произойдёт автоматически
                                 </div>
                             <?php endif; ?>
 

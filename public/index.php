@@ -8,8 +8,6 @@ use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
 use App\Controllers\ProductController;
 use App\Controllers\TgController;
-use App\Database\Database;
-use App\Services\Notifications\TgNotification;
 use Dotenv\Dotenv;
 use App\Core\Router;
 use App\Core\Session;
@@ -39,10 +37,11 @@ $router->post("/dashboard/add", [ProductController::class, 'add']);
 $router->post("/dashboard/save", [ProductController::class, 'save']);
 $router->get("/dashboard/cancel", [ProductController::class, 'cancel']);
 
-//delete-edit
+//delete-edit-showStats
 $router->delete('/product/{id}', [ProductController::class, 'delete']);
 $router->get('/product/{id}/edit', [ProductController::class, 'showEditForm']);
 $router->patch('/product/{id}', [ProductController::class, 'update']);
+$router->get('/product/{id}/stats', [ProductController::class, 'showStats']);
 
 //tg webhook (tg making POST request to server)
 $router->post('/telegram/webhook', [TgController::class, 'handle']);

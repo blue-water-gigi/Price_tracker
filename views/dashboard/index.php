@@ -16,7 +16,6 @@
         $counter = 1;
         ?>
 
-        <!-- URL input -->
         <section class="cmd-section">
             <div class="terminal-window">
                 <div class="window-header">
@@ -52,20 +51,18 @@
             </div>
         <?php endif; ?>
 
-        <!-- Toolbar: group filters -->
         <div class="dashboard-toolbar">
             <div class="group-filters" id="groupFilters">
                 <button class="group-filter-btn active" data-group="all">
                     ALL <span class="group-count" id="countAll"></span>
                 </button>
-                <!-- группы рендерятся через JS -->
+                <!-- группы рендерятся через js -->
             </div>
             <button class="group-create-btn" id="openGroupModal">+ NEW_GROUP</button>
         </div>
 
         <div class="grid-label" id="gridLabel">[ ACTIVE_MONITORING_NODES ]</div>
 
-        <!-- Products grid -->
         <section class="products-grid" id="productsGrid">
 
             <?php if (empty($products)): ?>
@@ -137,10 +134,15 @@
                             <div class="card-actions">
                                 <a href="/product/<?= $product['product_id'] ?>/edit" class="action-btn"
                                     style="flex:1; text-align:center;">EDIT</a>
+
+                                <a href="/product/<?= $product['product_id'] ?>/stats" class="action-btn"
+                                    style="flex:1; text-align:center;">STATISTICS</a>
+
                                 <form action="/product/<?= $product['product_id'] ?>" method="POST" style="flex:1; margin:0;">
                                     <input type="hidden" name="_method" value="DELETE">
                                     <button type="submit" class="action-btn danger" style="width:100%;">DELETE</button>
                                 </form>
+
                             </div>
 
                         </div>

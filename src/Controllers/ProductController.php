@@ -60,6 +60,20 @@ class ProductController
         require_once self::basePath("views/dashboard/edit.php");
     }
 
+    public function showStats(string $id): void
+    {
+        $this->requireAuth('/login');
+        $user_id = (int) Session::get('user_id');
+        $product = $this->product->getProduct((int) $id, $user_id);
+        $history = $this->history->getAllByProd((int) $id);
+
+        if (empty($product) || empty($history)) {
+            $this->redirect('/dashboard');
+        }
+
+        require_once self::basePath("views/dashboard/stats.php");
+    }
+
     public function add(): void
     {
         $this->requireAuth('/login');

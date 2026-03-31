@@ -9,7 +9,9 @@ use App\Database\Database;
 class History
 {
 
-    public function __construct(private Database $db) {}
+    public function __construct(private Database $db)
+    {
+    }
 
     public function create(int $product_id, float $price): array
     {
@@ -18,4 +20,12 @@ class History
             "product_id" => $product_id
         ])->fetch();
     }
+
+    public function getAllByProd(int $product_id): array
+    {
+        return $this->db->query("SELECT * FROM price_history WHERE product_id = :product_id ORDER BY checked_at ASC", [
+            'product_id' => $product_id
+        ])->fetchAll() ?? [];
+    }
+
 }

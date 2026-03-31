@@ -6,8 +6,10 @@ namespace App\Controllers;
 
 use App\Core\Session;
 use App\Models\Product;
+use App\Models\History;
 use App\Models\User;
 use App\Database\Database;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 class DashboardController
 {

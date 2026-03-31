@@ -17,7 +17,9 @@ class AlertService
     // if threshold is broken - send an notif
     // update the last_triggered_at
 
-    public function __construct(private Alert $alert, private NotificationService $notif) {}
+    public function __construct(private Alert $alert, private NotificationService $notif)
+    {
+    }
 
     public function check(array $product, float $old_price, float $new_price): void
     {
@@ -52,9 +54,11 @@ class AlertService
 
         $drop = (float) ($old_price - $new_price);
 
-        return match ($alert['type']) {
+        $typeTrigger = match ($alert['type']) {
             'absolute' => $drop >= $alert['threshold_value'],
             'percent' => round(($drop / $old_price * 100), 2) >= $alert['threshold_value']
         };
+
+        return $typeTrigger || $new_price <= $alert['target_price'];
     }
 }

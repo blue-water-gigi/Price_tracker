@@ -8,7 +8,9 @@ use App\Database\Database;
 
 class Product
 {
-    public function __construct(private Database $db) {}
+    public function __construct(private Database $db)
+    {
+    }
 
     public function existsForUser(int $user_id, string $url): ?int
     {
@@ -46,11 +48,16 @@ class Product
 
     public function getAllByUser(int $user_id): array
     {
-        return $this->db->query("SELECT p.*, s.name AS store_name
+        return $this->db->query("SELECT p.*, s.name AS store_name, prev.price AS previous_price
         FROM products AS p
         INNER JOIN stores AS s
-        ON p.store_id = s.store_id 
-        WHERE user_id = :user_id AND is_active = TRUE 
+        ON p.store_id = s.store_id
+        LEFT JOIN LATERAL (
+            SELECT price FROM price_history AS ph WHERE ph.product_id = p.product_id
+            ORDER BY ph.checked_at DESC 
+            LIMIT 1 OFFSET 1
+        ) prev ON true
+        WHERE p.user_id = :user_id AND p.is_active = TRUE 
         ORDER BY p.created_at ASC", [
             'user_id' => $user_id,
         ])->fetchAll() ?? [];
@@ -90,10 +97,16 @@ class Product
 
     public function getProduct(int $product_id, int $user_id): array
     {
-        return $this->db->query("SELECT * FROM products 
+        $fetched = $this->db->query("SELECT * FROM products 
         WHERE product_id = :product_id AND user_id = :user_id", [
             'product_id' => $product_id,
             'user_id' => $user_id
         ])->fetch() ?? [];
+
+        if (!$fetched) {
+            return [];
+        }
+
+        return $fetched;
     }
 }

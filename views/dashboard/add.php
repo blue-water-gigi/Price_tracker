@@ -30,7 +30,8 @@
                             <div class="price-current">
                                 <?= number_format($pending['parsed']['price'], 0, '.', ' ') === '0' ? 'Нет в наличии' : number_format($pending['parsed']['price'], 0, '.', ' ');
                                 ?>
-                                ₽</div>
+                                ₽
+                            </div>
                             <div class="price-status awaiting">AWAITING_DATA...</div>
                         </div>
                     </div>
@@ -45,7 +46,7 @@
                 </div>
 
                 <form action="/dashboard/save" method="POST" class="config-form"
-                    data-product-price="<?= (int)$pending['parsed']['price'] ?>">
+                    data-product-price="<?= (int) $pending['parsed']['price'] ?>">
 
                     <div class="form-grid">
 
@@ -54,8 +55,10 @@
                             <label class="section-label">ТИП УВЕДОМЛЕНИЯ О СНИЖЕНИИ:</label>
 
                             <div class="type-toggle">
-                                <input type="button" value="₽ АБСОЛЮТНОЕ" class="type-toggle-btn active" data-type="absolute">
-                                <input type="button" value="% ОТНОСИТЕЛЬНОЕ" class="type-toggle-btn" data-type="percent">
+                                <input type="button" value="₽ АБСОЛЮТНОЕ" class="type-toggle-btn active"
+                                    data-type="absolute">
+                                <input type="button" value="% ОТНОСИТЕЛЬНОЕ" class="type-toggle-btn"
+                                    data-type="percent">
                             </div>
 
                             <input type="hidden" name="alert_type" id="thresholdType" value="absolute">
@@ -68,33 +71,23 @@
                                         <span class="slider-value-badge" id="thresholdBadge">0 ₽</span>
                                     </div>
 
-                                    <input
-                                        type="range"
-                                        id="thresholdRange"
-                                        class="terminal-range"
-                                        min="0"
-                                        max="<?= (int)$pending['parsed']['price'] ?>"
-                                        value="0"
-                                        step="1"
+                                    <input type="range" id="thresholdRange" class="terminal-range" min="0"
+                                        max="<?= (int) $pending['parsed']['price'] ?>" value="0" step="1"
                                         style="--val: 0%">
 
                                     <div class="slider-ticks">
                                         <span>0</span>
-                                        <span id="thresholdMax"><?= number_format((int)$pending['parsed']['price'], 0, '.', ' ') ?> ₽</span>
+                                        <span
+                                            id="thresholdMax"><?= number_format((int) $pending['parsed']['price'], 0, '.', ' ') ?>
+                                            ₽</span>
                                     </div>
 
                                     <div class="slider-manual-row">
                                         <span class="slider-manual-label">ВВОД:</span>
                                         <div class="input-wrapper" style="flex:1">
                                             <span class="prompt">></span>
-                                            <input
-                                                type="number"
-                                                id="thresholdValue"
-                                                name="threshold_value"
-                                                placeholder="0"
-                                                min="0"
-                                                step="any"
-                                                required>
+                                            <input type="number" id="thresholdValue" name="threshold_value"
+                                                placeholder="0" min="0" step="any" required>
                                             <span class="input-suffix" id="thresholdSuffix">₽</span>
                                         </div>
                                     </div>
@@ -127,31 +120,19 @@
                                 <span class="slider-value-badge" id="targetBadge">0 ₽</span>
                             </div>
 
-                            <input
-                                type="range"
-                                id="targetRange"
-                                class="terminal-range"
-                                min="0"
-                                max="<?= (int)$pending['parsed']['price'] ?>"
-                                value="0"
-                                step="1"
-                                style="--val: 0%">
+                            <input type="range" id="targetRange" class="terminal-range" min="0"
+                                max="<?= (int) $pending['parsed']['price'] ?>" value="0" step="1" style="--val: 0%">
 
                             <div class="slider-ticks">
                                 <span>0</span>
-                                <span><?= number_format((int)$pending['parsed']['price'], 0, '.', ' ') ?> ₽</span>
+                                <span><?= number_format((int) $pending['parsed']['price'], 0, '.', ' ') ?> ₽</span>
                             </div>
 
                             <div class="slider-manual-row">
                                 <span class="slider-manual-label">ВВОД:</span>
                                 <div class="input-wrapper" style="flex:1">
                                     <span class="prompt">></span>
-                                    <input
-                                        type="number"
-                                        id="targetValue"
-                                        name="target_price"
-                                        placeholder="0"
-                                        min="0"
+                                    <input type="number" id="targetValue" name="target_price" placeholder="0" min="0"
                                         step="any">
                                     <span class="input-suffix">₽</span>
                                 </div>
