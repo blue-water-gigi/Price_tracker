@@ -22,8 +22,9 @@ class PriceCheckService
     public function __construct(
         private Product $product,
         private AlertService $alertService,
-        private History $history
-    ) {}
+        private History $history,
+    ) {
+    }
 
 
     public function run(): array
@@ -51,7 +52,8 @@ class PriceCheckService
     private function checkProduct(array $product): string
     {
         try {
-            $parsed = ParserFactory::make($product['url'])->parse($product['url']);
+            //todo refactor that bitch
+            $parsed = ParserFactory::make($product['url'])->parse($product['url'], ['city' => $product['city'] ?? 'Москва и область']);
 
             $this->alertService->markChecked((int) $product['product_id']);
 

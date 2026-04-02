@@ -6,5 +6,6 @@ CREATE TABLE users (
     telegram_chat_id BIGINT,
     phone VARCHAR(100) UNIQUE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    email_verified_at TIMESTAMP
+    email_verified_at TIMESTAMP,
+    city VARCHAR(255)
 );

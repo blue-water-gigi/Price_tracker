@@ -181,6 +181,114 @@
         </div>
     </div>
 
+    <?php if ($city['city'] !== null) { ?>
+        <div class="modal-overlay open" id="cityModal" aria-modal="true" role="dialog">
+            <div class="modal-box city-modal-box">
+
+                <div class="window-header">
+                    <span class="dot-red"></span>
+                    <span class="dot-yellow"></span>
+                    <span class="dot-green"></span>
+                    <span class="window-title">LOCATION_INIT.EXE</span>
+                </div>
+
+                <form action="/dashboard/city" method="POST" id="cityForm">
+
+                    <div class="modal-body">
+
+                        <div>
+                            <div class="modal-title">// SELECT_DELIVERY_REGION</div>
+                            <p class="modal-description">
+                                Укажите ваш регион — цены на товары зависят от склада доставки.
+                                Выбор влияет на точность данных с маркетплейсов.
+                            </p>
+                        </div>
+
+                        <div class="city-list">
+
+                            <label class="city-radio-label">
+                                <input type="radio" name="city" value="Москва и область" required>
+                                <span class="city-radio-mark"></span>
+                                Москва и область
+                                <span class="city-region">Центр</span>
+                            </label>
+
+                            <label class="city-radio-label">
+                                <input type="radio" name="city" value="Санкт-Петербург и Ленинградская область">
+                                <span class="city-radio-mark"></span>
+                                Санкт-Петербург и Ленинградская область
+                                <span class="city-region">Северо-Запад</span>
+                            </label>
+
+                            <label class="city-radio-label">
+                                <input type="radio" name="city" value="Казань">
+                                <span class="city-radio-mark"></span>
+                                Казань
+                                <span class="city-region">Приволжье</span>
+                            </label>
+
+                            <label class="city-radio-label">
+                                <input type="radio" name="city" value="Екатеринбург">
+                                <span class="city-radio-mark"></span>
+                                Екатеринбург
+                                <span class="city-region">Урал</span>
+                            </label>
+
+                            <label class="city-radio-label">
+                                <input type="radio" name="city" value="Краснодар">
+                                <span class="city-radio-mark"></span>
+                                Краснодар
+                                <span class="city-region">Юг</span>
+                            </label>
+
+                            <label class="city-radio-label">
+                                <input type="radio" name="city" value="Новосибирск">
+                                <span class="city-radio-mark"></span>
+                                Новосибирск
+                                <span class="city-region">Сибирь</span>
+                            </label>
+
+                            <label class="city-radio-label">
+                                <input type="radio" name="city" value="Хабаровск">
+                                <span class="city-radio-mark"></span>
+                                Хабаровск
+                                <span class="city-region">Дальний Восток</span>
+                            </label>
+
+                            <label class="city-radio-label">
+                                <input type="radio" name="city" value="Минск">
+                                <span class="city-radio-mark"></span>
+                                Минск
+                                <span class="city-region">Беларусь</span>
+                            </label>
+
+                            <label class="city-radio-label">
+                                <input type="radio" name="city" value="Алматы">
+                                <span class="city-radio-mark"></span>
+                                Алматы
+                                <span class="city-region">Казахстан</span>
+                            </label>
+
+                        </div>
+
+
+                        <div class="city-error" id="cityError">
+                            [!] REGION_NOT_SELECTED — выберите регион для продолжения
+                        </div>
+
+                        <div class="modal-actions">
+                            <button type="submit" class="btn-execute" id="citySubmitBtn">
+                                ПОДТВЕРДИТЬ РЕГИОН
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    <?php } ?>
+
     <?php include __DIR__ . "/../partials/footer.php" ?>
 
     <?php include __DIR__ . "/../partials/scripts.php" ?>

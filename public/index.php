@@ -27,6 +27,7 @@ $router->post("/register", [AuthController::class, 'register']);
 $router->post("/login", [AuthController::class, 'login']);
 
 //dashboard,settings
+$router->post("/dashboard/city", [DashboardController::class, 'saveCity']);
 $router->get("/dashboard", [DashboardController::class, 'showDashboard']);
 $router->get("/logout", [DashboardController::class, 'logout']);
 $router->get('/dashboard/settings', [DashboardController::class, 'showSettings']);

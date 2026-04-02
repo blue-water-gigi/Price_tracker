@@ -43,10 +43,18 @@ class User
         ])->fetch() ?? null;
     }
 
-    public function getEmail(int $user_id): ?string
+    public function linkCity(int $user_id, string $city): array
     {
-        return $this->db->query("SELECT email FROM users WHERE user_id = :user_id", [
+        return $this->db->query("UPDATE users SET city = :city WHERE user_id = :user_id RETURNING *", [
+            'city' => $city,
             'user_id' => $user_id
-        ])->fetch() ?? null;
+        ])->fetch() ?? [];
+    }
+
+    public function getUser(int $user_id): array
+    {
+        return $this->db->query("SELECT * FROM users WHERE user_id = :user_id", [
+            'user_id' => $user_id
+        ])->fetch() ?? [];
     }
 }

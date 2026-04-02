@@ -75,12 +75,14 @@ class Product
 
     public function getAllActive(): array
     {
-        return $this->db->query("SELECT p.*,s.parser_class,s.name AS store_name
+        return $this->db->query("SELECT p.*,s.parser_class,s.name AS store_name, u.city, u.email, u.telegram_chat_id
         FROM products AS p
         INNER JOIN stores AS s
         ON p.store_id = s.store_id
         INNER JOIN alerts AS a
         ON a.product_id = p.product_id
+        INNER JOIN users AS u
+        ON u.user_id = p.user_id
         WHERE p.is_active = TRUE
         AND a.is_active = TRUE
         AND (last_checked_at IS NULL OR last_checked_at + check_interval <= NOW())

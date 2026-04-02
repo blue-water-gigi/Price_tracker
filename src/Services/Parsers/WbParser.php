@@ -8,16 +8,19 @@ use Exception;
 
 class WbParser implements ParserInterface
 {
-    public function parse(string $url): array
+    public function parse(string $url, array $options = []): array
     {
         // extract the article
         $article = $this->extractArticle($url);
 
+        //get user dest
+        $city = $options['city'] ?? 'Москва и область';
+        $dest = $this->getUserCity($city);
+
         //make request to API and parse json if fetch is valid
-        //todo add dest variation for better user expirience.
-        //? idea: when logged in - user have a popup (js) with request to choose city (default=moscow(1257786), input his choice here)
-        $json = "https://card.wb.ru/cards/v4/detail?nm={$article}&curr=rub&dest=-1257786&appType=1&lang=ru";
-        $fetched =  $this->fetchJson($json);
+        //todo right now dest working on Sessions, but it's not right because when user is not logged in - it's gonna be error.
+        $json = "https://card.wb.ru/cards/v4/detail?nm={$article}&curr=rub&dest={$dest}&appType=1&lang=ru";
+        $fetched = $this->fetchJson($json);
 
         $data = [];
         //return the array with data or empty
@@ -91,9 +94,10 @@ class WbParser implements ParserInterface
         foreach ($offsets as $offset) {
             $currBasketNum = $basket + $offset;
 
-            if ($currBasketNum < 1) continue;
+            if ($currBasketNum < 1)
+                continue;
 
-            $basketStr = str_pad((string)$currBasketNum, 2, '0', STR_PAD_LEFT);
+            $basketStr = str_pad((string) $currBasketNum, 2, '0', STR_PAD_LEFT);
             $url = "https://basket-{$basketStr}.wbbasket.ru/vol{$vol}/part{$part}/{$article}/images/big/1.webp";
 
             if ($this->isUrlExist($url)) {
@@ -128,22 +132,51 @@ class WbParser implements ParserInterface
     private function getBasket(int $vol): string
     {
         // default basket system
-        if ($vol <= 143) return '01';
-        if ($vol <= 287) return '02';
-        if ($vol <= 431) return '03';
-        if ($vol <= 719) return '04';
-        if ($vol <= 1007) return '05';
-        if ($vol <= 1061) return '06';
-        if ($vol <= 1115) return '07';
-        if ($vol <= 1169) return '08';
-        if ($vol <= 1313) return '09';
-        if ($vol <= 1601) return '10';
-        if ($vol <= 1655) return '11';
-        if ($vol <= 1919) return '12';
-        if ($vol <= 2045) return '13';
+        if ($vol <= 143)
+            return '01';
+        if ($vol <= 287)
+            return '02';
+        if ($vol <= 431)
+            return '03';
+        if ($vol <= 719)
+            return '04';
+        if ($vol <= 1007)
+            return '05';
+        if ($vol <= 1061)
+            return '06';
+        if ($vol <= 1115)
+            return '07';
+        if ($vol <= 1169)
+            return '08';
+        if ($vol <= 1313)
+            return '09';
+        if ($vol <= 1601)
+            return '10';
+        if ($vol <= 1655)
+            return '11';
+        if ($vol <= 1919)
+            return '12';
+        if ($vol <= 2045)
+            return '13';
 
-        $basketNum = (int)floor($vol / 324) + 12;
+        $basketNum = (int) floor($vol / 324) + 12;
 
-        return str_pad((string)$basketNum, 2, '0', STR_PAD_LEFT);
+        return str_pad((string) $basketNum, 2, '0', STR_PAD_LEFT);
+    }
+
+    private function getUserCity(string $city): string
+    {
+        $destMap = [
+            'Москва и область' => '-1257786',
+            'Санкт-Петербург и Ленинградская область' => '-1257787',
+            'Казань' => '-1029256',
+            'Екатеринбург' => '-1113276',
+            'Краснодар' => '-1181034',
+            'Новосибирск' => '-1216601',
+            'Хабаровск' => '-1221148',
+            'Минск' => '-1075841',
+            'Алматы' => '-2133462',
+        ];
+        return $destMap[$city] ?? '-1257786';
     }
 }

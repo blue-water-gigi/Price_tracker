@@ -459,24 +459,41 @@ function renderGroupFilters() {
 
   Object.entries(groups).forEach(([id, group]) => {
     const count = Object.values(pg).filter((gid) => gid === id).length;
+
     const btn = document.createElement("button");
+    btn.type = "button";
     btn.className =
       "group-filter-btn" + (activeGroupFilter === id ? " active" : "");
     btn.dataset.group = id;
-    btn.innerHTML =
-      group.name + ' <span class="group-count">(' + count + ")</span>";
-    btn.addEventListener("click", () => filterByGroup(id));
 
-    // Долгий клик — удалить группу
-    let pressTimer;
-    btn.addEventListener("mousedown", () => {
-      pressTimer = setTimeout(() => {
-        if (confirm('Удалить группу "' + group.name + '"?')) deleteGroup(id);
-      }, 800);
+    // Текст + счётчик
+    const label = document.createElement("span");
+    label.textContent = group.name;
+    btn.appendChild(label);
+
+    const countSpan = document.createElement("span");
+    countSpan.className = "group-count";
+    countSpan.textContent = "(" + count + ")";
+    btn.appendChild(countSpan);
+
+    // × кнопка удаления
+    const delX = document.createElement("span");
+    delX.className = "group-delete-x";
+    delX.textContent = "×";
+    delX.title = "Удалить группу";
+    delX.addEventListener("click", (e) => {
+      e.stopPropagation();
+      // Если кнопка уже в режиме подтверждения — сразу удаляем
+      if (btn.dataset.confirming === "1") {
+        clearTimeout(btn._cancelTimer);
+        _doDeleteGroup(id);
+      } else {
+        deleteGroup(id, group.name);
+      }
     });
-    btn.addEventListener("mouseup", () => clearTimeout(pressTimer));
-    btn.addEventListener("mouseleave", () => clearTimeout(pressTimer));
+    btn.appendChild(delX);
 
+    btn.addEventListener("click", () => filterByGroup(id));
     container.appendChild(btn);
   });
 
@@ -626,13 +643,41 @@ function createGroup() {
   updateGroupSelects();
 }
 
-/* ── Удалить группу ────────────────────────────────────────── */
-function deleteGroup(groupId) {
+/* ── Удалить группу — с inline-тостом вместо confirm() ─────── */
+function deleteGroup(groupId, groupName) {
+  // Находим кнопку группы и показываем inline-подтверждение
+  const btn = document.querySelector(
+    `.group-filter-btn[data-group="${groupId}"]`,
+  );
+  if (!btn) return;
+
+  // Если уже в режиме подтверждения — выполняем удаление
+  if (btn.dataset.confirming === "1") {
+    _doDeleteGroup(groupId);
+    return;
+  }
+
+  // Переводим в режим подтверждения
+  btn.dataset.confirming = "1";
+  const prevClass = btn.className;
+  btn.style.borderColor = "var(--accent-danger)";
+  btn.style.color = "var(--accent-danger)";
+  btn.querySelector("span:first-child").textContent = "УДАЛИТЬ?";
+
+  // Автоотмена через 2.5 сек
+  btn._cancelTimer = setTimeout(() => {
+    btn.dataset.confirming = "0";
+    btn.style.borderColor = "";
+    btn.style.color = "";
+    btn.querySelector("span:first-child").textContent = groupName;
+  }, 2500);
+}
+
+function _doDeleteGroup(groupId) {
   const groups = getGroups();
   delete groups[groupId];
   saveGroups(groups);
 
-  // снять группу у всех товаров этой группы
   const pg = getProductGroups();
   Object.keys(pg).forEach((pid) => {
     if (pg[pid] === groupId) delete pg[pid];
@@ -657,3 +702,66 @@ function closeGroupModal() {
 
 // Вызываем при DOMContentLoaded
 document.addEventListener("DOMContentLoaded", initDashboardGroups);
+
+/* ============================================================
+     CITY SELECTION MODAL
+     ============================================================ */
+
+function initCityModal() {
+  const modal = document.getElementById("cityModal");
+  const form = document.getElementById("cityForm");
+  const errEl = document.getElementById("cityError");
+  if (!modal || !form) return;
+
+  /* Валидация перед сабмитом */
+  form.addEventListener("submit", (e) => {
+    const checked = form.querySelector('input[name="city"]:checked');
+    if (!checked) {
+      e.preventDefault();
+      errEl && errEl.classList.add("visible");
+      /* потрясти модалку */
+      const box = modal.querySelector(".modal-box");
+      if (box) {
+        box.style.animation = "none";
+        box.offsetHeight; // reflow
+        box.style.animation = "shake 0.35s ease";
+      }
+    }
+  });
+
+  /* Скрыть ошибку при выборе */
+  form.querySelectorAll('input[name="city"]').forEach((radio) => {
+    radio.addEventListener("change", () => {
+      errEl && errEl.classList.remove("visible");
+    });
+  });
+
+  /* Клавиша Escape — запрещаем закрытие (выбор обязателен) */
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("open")) {
+      e.preventDefault();
+      /* небольшой shake чтобы дать понять что закрыть нельзя */
+      const box = modal.querySelector(".modal-box");
+      if (box) {
+        box.style.animation = "none";
+        box.offsetHeight;
+        box.style.animation = "shake 0.35s ease";
+      }
+    }
+  });
+
+  /* Клик на оверлей — тоже не закрываем, shake */
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      const box = modal.querySelector(".modal-box");
+      if (box) {
+        box.style.animation = "none";
+        box.offsetHeight;
+        box.style.animation = "shake 0.35s ease";
+      }
+    }
+  });
+}
+
+/* Вызываем при DOMContentLoaded */
+document.addEventListener("DOMContentLoaded", initCityModal);

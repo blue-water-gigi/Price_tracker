@@ -97,7 +97,8 @@ class ProductController
         }
 
         try {
-            $parsed = ParserFactory::make($url)->parse($url);
+            //todo bruh this is so fucking shit. Refactor that bitch
+            $parsed = ParserFactory::make($url)->parse($url, ['city' => Session::get('city') ?? 'Москва и область']);
             Session::set("pending_product", [
                 'parsed' => $parsed,
                 'url' => $url

@@ -17,5 +17,5 @@ interface ParserInterface
      * extra?: array
      * }
      */
-    public function parse(string $url): array;
+    public function parse(string $url, array $options = []): array;
 }

@@ -96,6 +96,30 @@
                         </div>
                     </div>
 
+                    <!-- Change city -->
+                    <div class="settings-section">
+                        <div class="settings-section-header">
+                            <span class="settings-section-title">// CHANGE_CITY</span>
+                        </div>
+                        <div class="settings-section-body">
+                            <div class="settings-field">
+                                <span class="settings-field-label">ТЕКУЩИЙ:</span>
+                                <span class="settings-field-value" id="currentUsername">
+                                    <?= convert($user['city']) ?>
+                                </span>
+                            </div>
+                            <div class="settings-field">
+                                <label class="settings-field-label" for="newUsername">НОВЫЙ:</label>
+                                <!-- //todo add option to choose city -->
+                            </div>
+                        </div>
+                        <div class="settings-save-row">
+                            <span class="save-status" id="status-username"></span>
+                            <button class="btn-execute" style="width:auto; padding: 10px 28px;"
+                                onclick="saveField('username')">ПРИМЕНИТЬ</button>
+                        </div>
+                    </div>
+
                 </div><!-- /panel-profile -->
 
                 <!-- ══ SECURITY ═════════════════════════════ -->
