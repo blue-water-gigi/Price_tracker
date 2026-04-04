@@ -57,4 +57,12 @@ class User
             'user_id' => $user_id
         ])->fetch() ?? [];
     }
+
+    public function updateUsername(int $user_id, string $username): int
+    {
+        return $this->db->query("UPDATE users SET username = :username WHERE user_id = :user_id", [
+            'user_id' => $user_id,
+            'username' => $username
+        ])->countRows() ?? 0;
+    }
 }

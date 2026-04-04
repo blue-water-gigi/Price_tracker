@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Models\User;
 use App\Services\AuthService;
 use App\Database\Database;
 use App\Core\Validator;
@@ -92,6 +93,28 @@ class AuthController
             ]);
             Session::flash('old', $_POST);
             $this->redirect('/login');
+        }
+        $this->redirect('/dashboard');
+    }
+
+    public function updateUsername(): void
+    {
+        $this->requireAuth('/login');
+        $username = trim((string) ($_POST['username'] ?? ''));
+        $validation = (new Validator(['username' => $username]))
+            ->required('username')
+            ->length('username', 2, 70);
+
+        if (!$validation->isValid()) {
+            Session::flash('errors', $validation->getErrors());
+            Session::flash('old', $_POST);
+            $this->redirect('/dashboard/settings');
+        }
+
+        $user_id = (int) Session::get('user_id');
+        $rows = (new User(Database::getInstance()))->updateUsername($user_id, $username);
+        if ($rows > 0) {
+            Session::set('username', $username);
         }
         $this->redirect('/dashboard');
     }

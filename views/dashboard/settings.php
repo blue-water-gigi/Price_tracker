@@ -13,16 +13,14 @@
 
         <div class="top-nav" style="margin-bottom:0.5rem;">
             <a href="/dashboard" class="nav-btn">
-                << BACK</a>
+                &lt;&lt; BACK</a>
         </div>
 
         <div class="grid-label">[ USER_CONFIGURATION // SESSION: <?= strtoupper(App\Core\Session::get('username')) ?> ]
         </div>
 
-
         <div class="settings-layout">
 
-            <!-- ── Sidebar nav ─────────────────────────────── -->
             <nav class="settings-nav">
                 <div class="settings-nav-header">// CONFIG_MODULES</div>
 
@@ -37,13 +35,10 @@
                 </div>
             </nav>
 
-            <!-- ── Panels ──────────────────────────────────── -->
             <div class="settings-panels">
 
-                <!-- ══ PROFILE ══════════════════════════════ -->
                 <div class="settings-panel active" id="panel-profile">
 
-                    <!-- Identity block -->
                     <div class="settings-section">
                         <div class="settings-section-header">
                             <span class="settings-section-title">// IDENTITY_NODE</span>
@@ -68,12 +63,11 @@
                         </div>
                     </div>
 
-                    <!-- Change username -->
                     <div class="settings-section">
                         <div class="settings-section-header">
                             <span class="settings-section-title">// CHANGE_USERNAME</span>
                         </div>
-                        <div class="settings-section-body">
+                        <form class="settings-section-body" method="POST" action="/dashboard/settings">
                             <div class="settings-field">
                                 <span class="settings-field-label">ТЕКУЩИЙ:</span>
                                 <span class="settings-field-value" id="currentUsername">
@@ -88,41 +82,67 @@
                                         placeholder="введите новый username" autocomplete="off">
                                 </div>
                             </div>
-                        </div>
+                        
                         <div class="settings-save-row">
                             <span class="save-status" id="status-username"></span>
-                            <button class="btn-execute" style="width:auto; padding: 10px 28px;"
-                                onclick="saveField('username')">ПРИМЕНИТЬ</button>
+                            <button type="submit" class="btn-execute" style="width:auto; padding: 10px 28px;">
+                                ПРИМЕНИТЬ</button>
                         </div>
+
+                        </form>
                     </div>
 
-                    <!-- Change city -->
+                    <?php
+                        $cities = [
+                            'Москва и область'                        => -1257786,
+                            'Санкт-Петербург и Ленинградская область' => -1257787,
+                            'Казань'                                  => -1029256,
+                            'Екатеринбург'                            => -1113276,
+                            'Краснодар'                               => -1181034,
+                            'Новосибирск'                             => -1216601,
+                            'Хабаровск'                               => -1221148,
+                            'Минск'                                   => -1075841,
+                            'Алматы'                                  => -2133462,
+                        ];
+                        $currentCity = convert($user['city'] ?? '—');
+                    ?>
                     <div class="settings-section">
                         <div class="settings-section-header">
                             <span class="settings-section-title">// CHANGE_CITY</span>
                         </div>
                         <div class="settings-section-body">
+
                             <div class="settings-field">
                                 <span class="settings-field-label">ТЕКУЩИЙ:</span>
-                                <span class="settings-field-value" id="currentUsername">
-                                    <?= convert($user['city']) ?>
-                                </span>
+                                <span class="settings-field-value" id="currentCity"><?= $currentCity ?></span>
                             </div>
-                            <div class="settings-field">
-                                <label class="settings-field-label" for="newUsername">НОВЫЙ:</label>
-                                <!-- //todo add option to choose city -->
-                            </div>
-                        </div>
-                        <div class="settings-save-row">
-                            <span class="save-status" id="status-username"></span>
-                            <button class="btn-execute" style="width:auto; padding: 10px 28px;"
-                                onclick="saveField('username')">ПРИМЕНИТЬ</button>
+
+                            <form id="citySettingsForm"
+                                  action="/dashboard/city"
+                                  method="POST">
+                                <div class="settings-field" style="margin-bottom:1rem;">
+                                    <label class="settings-field-label" for="newCity">НОВЫЙ:</label>
+                                    <select name="city"
+                                            id="newCity"
+                                            class="terminal-select">
+                                        <option value="" disabled selected>— выберите регион —</option>
+                                        <?php foreach ($cities as $name => $id): ?>
+                                            <option value="<?= htmlspecialchars($name) ?>"
+                                                <?= ($user['city'] ?? '') === $name ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($name) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="settings-save-row">
+                                    <button type="submit" class="btn-execute"
+                                            style="width:auto; padding: 10px 28px;">ПРИМЕНИТЬ</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
+                </div>
 
-                </div><!-- /panel-profile -->
-
-                <!-- ══ SECURITY ═════════════════════════════ -->
                 <div class="settings-panel" id="panel-security">
 
                     <div class="settings-section">
@@ -174,9 +194,8 @@
                         </div>
                     </div>
 
-                </div><!-- /panel-security -->
+                </div>
 
-                <!-- ══ NOTIFICATIONS ════════════════════════ -->
                 <div class="settings-panel" id="panel-notifications">
 
                     <?php
@@ -194,8 +213,6 @@
                         <div class="settings-section-body">
 
                             <div class="tg-connect-block">
-
-                                <!-- Статус привязки -->
                                 <div class="tg-status-indicator">
                                     <span class="tg-dot <?= $tgConnected ? 'connected' : 'disconnected' ?>"
                                         id="tgDot"></span>
@@ -206,7 +223,6 @@
                                     </span>
                                 </div>
 
-                                <!-- Кнопка — ссылка на бота -->
                                 <?php if (!$tgConnected): ?>
                                     <a target="_blank" href="<?= convert($tgLink) ?>" class="btn-execute"
                                         style="width:auto; padding: 10px 24px;" id="tgConnectBtn">
@@ -218,16 +234,14 @@
                                         ID: <?= convert((string) $tg_chat_id['telegram_chat_id']) ?>
                                     </span>
                                 <?php endif; ?>
-
                             </div>
 
-                            <!-- Подсказка если не привязан -->
                             <?php if (!$tgConnected): ?>
                                 <div class="tg-code-hint" style="margin-top: 0.75rem;">
                                     &gt; Нажмите кнопку — откроется <span
                                         style="color:var(--accent);">@<?= $botUsername ?></span><br>
-                                    &gt; Отправьте боту команду <span style="color:var(--accent);">/start</span> — привязка
-                                    произойдёт автоматически
+                                    &gt; Отправьте боту команду <span style="color:var(--accent);">/start</span> —
+                                    привязка произойдёт автоматически
                                 </div>
                             <?php endif; ?>
 

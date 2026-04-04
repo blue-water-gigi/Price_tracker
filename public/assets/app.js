@@ -147,19 +147,6 @@ function setTelegramState(connected) {
 function saveField(field) {
   const statusEl = document.getElementById("status-" + field);
 
-  if (field === "username") {
-    const val = (document.getElementById("newUsername")?.value || "").trim();
-    if (!val) return showStatus(statusEl, "ERR: EMPTY_VALUE", "err");
-    // fetch('/api/settings/username', { method: 'POST', ... })
-    const upper = val.toUpperCase();
-    const cur = document.getElementById("currentUsername");
-    const disp = document.getElementById("displayName");
-    if (cur) cur.textContent = upper;
-    if (disp) disp.textContent = upper;
-    document.getElementById("newUsername").value = "";
-    showStatus(statusEl, "OK: USERNAME_UPDATED", "ok");
-  }
-
   if (field === "email") {
     const val = (document.getElementById("newEmail")?.value || "").trim();
     if (!val || !val.includes("@"))
