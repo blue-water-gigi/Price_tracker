@@ -23,3 +23,6 @@ PARSE_PLAN.drawio
 PARSER_STRUCTURE.html
 migrations/migrate.sh
 /ui_ux/
+code_review_eng.md
+code_review_ru.md
+code_review.todo
