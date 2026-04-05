@@ -8,6 +8,7 @@ use App\Core\Session;
 use App\Models\Product;
 use App\Models\User;
 use App\Database\Database;
+use App\Services\TgService;
 
 class DashboardController
 {
@@ -33,10 +34,20 @@ class DashboardController
     {
         $this->requireAuth('/login');
         $user_id = (int) Session::get('user_id');
-        //todo code double, refactor user $user, delete $tg_chat_id
-        $tg_chat_id = new User(Database::getInstance())->getTgChatId($user_id);
-        $user = (new User(Database::getInstance()))->getUser($user_id);
-        // dd($user);
+
+        $userModel = new User(Database::getInstance());
+        $tgService = new TgService($_ENV['TG_BOT_TOKEN']);
+
+        $user = $userModel->getUser($user_id);
+
+        //for default = null, if already linked
+        $token = null;
+        if (empty($user['telegram_chat_id'])) {
+            $token = $tgService->generateLinkToken($user_id);
+            $nonce = substr($token, 0, 32);
+            $userModel->saveLinkNonce($user_id, $nonce, time() + 300);
+        }
+
         require_once self::basePath('views/dashboard/settings.php');
     }
 

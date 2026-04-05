@@ -127,9 +127,9 @@
                                             class="terminal-select">
                                         <option value="" disabled selected>— выберите регион —</option>
                                         <?php foreach ($cities as $name => $id): ?>
-                                            <option value="<?= htmlspecialchars($name) ?>"
+                                            <option value="<?= convert($name) ?>"
                                                 <?= ($user['city'] ?? '') === $name ? 'selected' : '' ?>>
-                                                <?= htmlspecialchars($name) ?>
+                                                <?= convert($name) ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
@@ -199,11 +199,9 @@
                 <div class="settings-panel" id="panel-notifications">
 
                     <?php
-                    $userId = App\Core\Session::get('user_id') ?? '';
                     $botUsername = 'Price_pricerr_bot';
-                    $payload = base64_encode($userId);
-                    $tgLink = "https://t.me/{$botUsername}?start={$payload}";
-                    $tgConnected = $tg_chat_id['telegram_chat_id'] !== null;
+                    $tgLink = $token !== null ? "https://t.me/{$botUsername}?start={$token}" : "#";
+                    $tgConnected = $user['telegram_chat_id'] !== null;
                     ?>
 
                     <div class="settings-section">
@@ -231,7 +229,7 @@
                                 <?php else: ?>
                                     <span class="settings-field-value"
                                         style="color: var(--accent-dim); font-size: 0.78rem;">
-                                        ID: <?= convert((string) $tg_chat_id['telegram_chat_id']) ?>
+                                        ID: <?= convert((string) $user['telegram_chat_id']) ?>
                                     </span>
                                 <?php endif; ?>
                             </div>

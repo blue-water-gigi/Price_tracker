@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use Exception;
+use App\Models\User;
+use App\Database\Database;
 
 readonly class TgService
 {
@@ -55,5 +57,32 @@ readonly class TgService
             'text' => $text,
             'parse_mode' => $parseMode
         ]);
+    }
+
+    public function generateLinkToken(int $user_id): string
+    {
+        $nonce = bin2hex(random_bytes(16));
+
+        $sign = substr(hash_hmac('sha256', "{$nonce}{$user_id}", $_ENV['APP_SECRET']), 0, 16);
+
+        return $nonce . $sign;
+    }
+
+    public function verifyLinkToken(string $token, string $user_id): bool
+    {
+        if (strlen($token) !== 48) {
+            return false;
+        }
+        
+        $nonce = substr($token, 0, 32);
+        $signFromToken = substr($token, 32);
+
+        $expectedSign = substr(
+            hash_hmac('sha256', $nonce . $user_id, $_ENV['APP_SECRET']),
+            0,
+            16
+        );
+
+        return hash_equals($expectedSign, $signFromToken);
     }
 }

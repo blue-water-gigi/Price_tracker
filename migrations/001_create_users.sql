@@ -7,5 +7,7 @@ CREATE TABLE users (
     phone VARCHAR(100) UNIQUE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     email_verified_at TIMESTAMP,
-    city VARCHAR(255)
+    city VARCHAR(255),
+    tg_link_nonce VARCHAR(64),
+    tg_nonce_expires_at TIMESTAMP;
 );

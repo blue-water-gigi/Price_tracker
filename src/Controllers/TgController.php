@@ -74,9 +74,35 @@ class TgController
             return;
         }
 
-        $user_id = (int) base64_decode($parts[1]);
+        $token = $parts[1];
+        if (strlen($token) !== 48) {
+            $this->tgService->sendMessage($chat_id, "<b>❌ Ошибка!</b>\nНедействительный токен.");
+            return;
+        }
 
-        $isLinked = $this->user->linkTg($user_id, $chat_id);
+        $nonce = substr($token, 0, 32);
+
+        $userData = $this->user->findByNounce($nonce);
+
+        if (!$userData) {
+            $this->tgService->sendMessage($chat_id, "<b>❌ Ошибка!</b>\nТокен не найден или уже использован.");
+            return;
+        }
+
+        if (strtotime($userData['tg_nonce_expires_at']) < time()) {
+            $this->user->consumeLinkNonce($nonce);
+            $this->tgService->sendMessage($chat_id, "<b>❌ Ошибка!</b>\nТокен истёк. Вернитесь на сайт и попробуйте снова.");
+            return;
+        }
+
+        if (!$this->tgService->verifyLinkToken($token, (string) $userData['user_id'])) {
+            $this->tgService->sendMessage($chat_id, "<b>❌ Ошибка!</b>\nПодпись токена неверна.");
+            return;
+        }
+
+        $this->user->consumeLinkNonce($nonce);
+
+        $isLinked = $this->user->linkTg((int) $userData['user_id'], $chat_id);
 
         if ($isLinked) {
             $this->tgService->sendMessage($chat_id, "<b>✔ Успешно!</b>\nВаш аккаунт привязан. Теперь я буду присылать уведомления о ценах сюда.");
