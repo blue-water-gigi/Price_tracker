@@ -23,6 +23,7 @@
                     <span class="window-title">ADD_NEW_TARGET.BAT</span>
                 </div>
                 <form action="/dashboard/add" method="POST" class="cmd-form">
+                    <?= csrf() ?>
                     <span class="prompt">ID@ROOT:~$</span>
                     <input value="<?= convert($old['url'] ?? '') ?>" type="url" name="url"
                         placeholder="ENTER_PRODUCT_URL..." required>
@@ -139,6 +140,7 @@
                                     style="flex:1; text-align:center;">STATISTICS</a>
 
                                 <form action="/product/<?= $product['product_id'] ?>" method="POST" style="flex:1; margin:0;">
+                                    <?= csrf() ?>
                                     <input type="hidden" name="_method" value="DELETE">
                                     <button type="submit" class="action-btn danger" style="width:100%;">DELETE</button>
                                 </form>
@@ -193,7 +195,7 @@
                 </div>
 
                 <form action="/dashboard/city" method="POST" id="cityForm">
-
+                    <?= csrf() ?>
                     <div class="modal-body">
 
                         <div>

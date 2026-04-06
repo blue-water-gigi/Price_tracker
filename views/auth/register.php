@@ -36,11 +36,14 @@
                 <?php $old = App\Core\Session::getFlash('old') ?? [] ?>
 
                 <form action="/register" method="POST" class="terminal-form">
+                    <?= csrf() ?>
+
                     <div class="input-group">
                         <label>IDENTITY (EMAIL):</label>
                         <div class="input-wrapper">
                             <span class="prompt">></span>
-                            <input value="<?= convert($old['email'] ?? '') ?>" type="email" name="email" required placeholder="...">
+                            <input value="<?= convert($old['email'] ?? '') ?>" type="email" name="email" required
+                                placeholder="...">
                         </div>
                     </div>
 
@@ -48,7 +51,8 @@
                         <label>USERNAME:</label>
                         <div class="input-wrapper">
                             <span class="prompt">></span>
-                            <input value="<?= convert($old['username'] ?? '') ?>" type="text" name="username" required placeholder="Admin">
+                            <input value="<?= convert($old['username'] ?? '') ?>" type="text" name="username" required
+                                placeholder="Admin">
                         </div>
                     </div>
 
@@ -81,7 +85,7 @@
                                 <span class="error-prefix">[!] CRITICAL_ERROR:</span>
                                 <?= convert($msg[0]) ?>
                             </p>
-                        <?php  } ?>
+                        <?php } ?>
                     </div>
                 <?php } ?>
 

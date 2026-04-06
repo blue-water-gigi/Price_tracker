@@ -47,6 +47,7 @@
 
                 <form action="/dashboard/save" method="POST" class="config-form"
                     data-product-price="<?= (int) $pending['parsed']['price'] ?>">
+                    <?= csrf() ?>
 
                     <div class="form-grid">
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Services\CsrfService;
+
 class Router
 {
     private array $routes = [];
@@ -63,6 +65,10 @@ class Router
 
         if ($method === 'POST' && isset($_POST['_method'])) {
             $method = strtoupper($_POST['_method']);
+        }
+        
+        if (($method === 'POST' || $method === 'PATCH' || $method === 'DELETE') && $path !== '/telegram/webhook') {
+            CsrfService::verify($_POST['_csrf'] ?? '') ?: $this->abort(403);
         }
 
         foreach ($this->routes as $route) {

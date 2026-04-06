@@ -37,11 +37,14 @@
                 <?php $old = App\Core\Session::getFlash('old'); ?>
 
                 <form action="/login" method="POST" class="terminal-form">
+                    <?= csrf() ?>
+
                     <div class="input-group">
                         <label>EMAIL:</label>
                         <div class="input-wrapper">
                             <span class="prompt">></span>
-                            <input value="<?= convert($old['email'] ?? '') ?>" type="email" name="email" required placeholder="...">
+                            <input value="<?= convert($old['email'] ?? '') ?>" type="email" name="email" required
+                                placeholder="...">
                         </div>
                     </div>
 
@@ -67,7 +70,7 @@
                                 <span class="error-prefix">[!] CRITICAL_ERROR:</span>
                                 <?= convert($msg[0]) ?>
                             </p>
-                        <?php  } ?>
+                        <?php } ?>
                     </div>
                 <?php } ?>
 

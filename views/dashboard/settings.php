@@ -68,6 +68,7 @@
                             <span class="settings-section-title">// CHANGE_USERNAME</span>
                         </div>
                         <form class="settings-section-body" method="POST" action="/dashboard/settings">
+                        <?= csrf() ?>
                             <div class="settings-field">
                                 <span class="settings-field-label">ТЕКУЩИЙ:</span>
                                 <span class="settings-field-value" id="currentUsername">
@@ -80,6 +81,7 @@
                                     <span class="prompt">></span>
                                     <input type="text" id="newUsername" name="username"
                                         placeholder="введите новый username" autocomplete="off">
+                                    <input type="hidden" name="_method" value="PATCH">
                                 </div>
                             </div>
                         
@@ -120,6 +122,7 @@
                             <form id="citySettingsForm"
                                   action="/dashboard/city"
                                   method="POST">
+                                  <?= csrf() ?>
                                 <div class="settings-field" style="margin-bottom:1rem;">
                                     <label class="settings-field-label" for="newCity">НОВЫЙ:</label>
                                     <select name="city"

@@ -13,3 +13,8 @@ function convert(mixed $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES, "UTF-8");
 }
+
+function csrf(): string
+{
+    return '<input type="hidden" name="_csrf" value="' . App\Services\CsrfService::generate() . '">';
+}

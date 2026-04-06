@@ -32,7 +32,7 @@ $router->post("/dashboard/city", [DashboardController::class, 'saveCity']);
 $router->get("/dashboard", [DashboardController::class, 'showDashboard']);
 $router->get("/logout", [DashboardController::class, 'logout']);
 $router->get('/dashboard/settings', [DashboardController::class, 'showSettings']);
-$router->post('/dashboard/settings', [AuthController::class, 'updateUsername']);
+$router->patch('/dashboard/settings', [AuthController::class, 'updateUsername']);
 
 //add-save-cancel
 $router->get("/dashboard/add", [ProductController::class, 'showAddForm']);
