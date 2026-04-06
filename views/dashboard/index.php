@@ -181,7 +181,7 @@
         </div>
     </div>
 
-    <?php if ($city['city'] !== null) { ?>
+    <?php if ($user['city'] !== null) { ?>
         <div class="modal-overlay open" id="cityModal" aria-modal="true" role="dialog">
             <div class="modal-box city-modal-box">
 

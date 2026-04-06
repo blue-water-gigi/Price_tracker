@@ -37,13 +37,6 @@ class User
         return false;
     }
 
-    public function getTgChatId(int $user_id): ?array
-    {
-        return $this->db->query("SELECT telegram_chat_id FROM users WHERE user_id = :user_id", [
-            'user_id' => $user_id
-        ])->fetch() ?? null;
-    }
-
     public function linkCity(int $user_id, string $city): array
     {
         return $this->db->query("UPDATE users SET city = :city WHERE user_id = :user_id RETURNING *", [

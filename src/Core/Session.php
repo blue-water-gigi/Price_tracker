@@ -14,6 +14,22 @@ class Session
         }
     }
 
+    public static function configure(int $lifetime): void
+    {
+        session_set_cookie_params([
+            'lifetime' => $lifetime,
+            'path' => '/',
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict'
+        ]);
+    }
+
+    public static function elevate(): void
+    {
+        session_regenerate_id(true);
+    }
+
     public static function set(string $key, mixed $value): void
     {
         $_SESSION[$key] = $value;
@@ -48,7 +64,7 @@ class Session
         $_SESSION['_flash'][$key] = $value;
     }
 
-    public static function getFlash(string $key, mixed $default = null): array | string | null
+    public static function getFlash(string $key, mixed $default = null): array|string|null
     {
         $value = $_SESSION['_flash'][$key] ?? $default;
         unset($_SESSION['_flash'][$key]);

@@ -15,6 +15,7 @@ use App\Core\Session;
 $dotenv = Dotenv::createImmutable(__DIR__ . "/../");
 $dotenv->load();
 
+Session::configure(0);
 Session::start();
 
 $router = new Router();

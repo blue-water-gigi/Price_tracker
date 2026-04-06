@@ -11,7 +11,9 @@ use Exception;
 
 class AuthService
 {
-    public function __construct(private Database $db) {}
+    public function __construct(private Database $db)
+    {
+    }
 
     public function register(string $username, string $email, string $password): bool
     {
@@ -39,9 +41,10 @@ class AuthService
 
         $userId = $this->db->getLastInsertId('users_user_id_seq');
 
-        Session::start();
+        Session::elevate();
         Session::set('user_id', $userId);
         Session::set('username', $username);
+        Session::set('email', $email);
 
         return true;
     }
@@ -60,9 +63,10 @@ class AuthService
             return false;
         }
 
-        Session::start();
+        Session::elevate();
         Session::set('user_id', $user['user_id']);
         Session::set('username', $user['username']);
+        Session::set('email', $user['email']);
 
         return true;
     }
@@ -70,7 +74,6 @@ class AuthService
     public function logout(): void
     {
         Session::destroy();
-        //redirect to landing page
         header('Location: /');
         exit();
     }
