@@ -18,6 +18,7 @@ class DashboardController
         //todo change /register redirect to error redirect (403) later
         $this->requireAuth('/login');
         $user_id = (int) Session::get('user_id');
+        $user = (new User(Database::getInstance()))->getUser($user_id);
         $product = new Product(Database::getInstance());
         $products = $product->getAllByUser($user_id);
         require_once self::basePath('views/dashboard/index.php');

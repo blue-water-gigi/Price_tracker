@@ -8,6 +8,7 @@ use App\Database\Database;
 use App\Core\Session;
 use ErrorException;
 use Exception;
+use PDOException;
 
 class AuthService
 {
@@ -17,32 +18,29 @@ class AuthService
 
     public function register(string $username, string $email, string $password): bool
     {
+
         try {
-            $existUser = $this->db->query("SELECT * FROM users WHERE username = :username", [
+            $user = $this->db->query("INSERT INTO users(email,password_hash,username)
+            VALUES (:email, :password, :username) 
+            ON CONFLICT (username) DO NOTHING RETURNING user_id", [
                 "username" => $username,
+                "password" => password_hash($password, PASSWORD_BCRYPT),
+                "email" => $email
             ])->fetch();
 
-            $existEmail = $this->db->query("SELECT * FROM users WHERE email = :email", [
-                "email" => $email,
-            ])->fetch();
-        } catch (\Throwable $th) {
-            throw new Exception("Error fetching data: " . $th->getMessage());
+            if (!$user) {
+                return false;
+            }
+        } catch (PDOException $e) {
+            //! only works for psql cuz of hardcode of Code
+            if ($e->getCode() === '23505' && str_contains($e->getMessage(), 'users_email_key')) {
+                return false;
+            }
+            throw $e;
         }
-
-        if ($existUser || $existEmail) {
-            return false;
-        }
-
-        $this->db->query("INSERT INTO users(email,password_hash,username) VALUES (:email, :password, :username)", [
-            "username" => $username,
-            "password" => password_hash($password, PASSWORD_BCRYPT),
-            "email" => $email
-        ]);
-
-        $userId = $this->db->getLastInsertId('users_user_id_seq');
 
         Session::elevate();
-        Session::set('user_id', $userId);
+        Session::set('user_id', $user['user_id']);
         Session::set('username', $username);
         Session::set('email', $email);
 

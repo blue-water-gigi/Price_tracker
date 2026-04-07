@@ -53,7 +53,14 @@ class Database
         return $this->connection;
     }
 
-    public function query($query, array $params = []): self
+    /**
+     * Summary of query
+     * @param string $query
+     * @param array $params
+     * @return Database
+     * @throws PDOException
+     */
+    public function query(string $query, array $params = []): self
     {
         $this->statement = $this->connection->prepare($query);
 
@@ -62,10 +69,10 @@ class Database
         return $this;
     }
 
-    public function getLastInsertId(?string $name = null): string
-    {
-        return $this->getPdo()->lastInsertId($name);
-    }
+    // public function getLastInsertId(?string $name = null): string
+    // {
+    //     return $this->getPdo()->lastInsertId($name);
+    // }
 
     public function fetch(): mixed
     {

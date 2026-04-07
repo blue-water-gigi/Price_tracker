@@ -418,26 +418,31 @@ function showStatus(el, text, type) {
 
 const GROUPS_KEY = "pc_groups";
 const PGROUPS_KEY = "pc_product_groups";
+let dashboardUserScope = "global";
+
+function getScopedKey(baseKey) {
+  return `${baseKey}:${dashboardUserScope}`;
+}
 
 function getGroups() {
   try {
-    return JSON.parse(localStorage.getItem(GROUPS_KEY) || "{}");
+    return JSON.parse(localStorage.getItem(getScopedKey(GROUPS_KEY)) || "{}");
   } catch (e) {
     return {};
   }
 }
 function getProductGroups() {
   try {
-    return JSON.parse(localStorage.getItem(PGROUPS_KEY) || "{}");
+    return JSON.parse(localStorage.getItem(getScopedKey(PGROUPS_KEY)) || "{}");
   } catch (e) {
     return {};
   }
 }
 function saveGroups(g) {
-  localStorage.setItem(GROUPS_KEY, JSON.stringify(g));
+  localStorage.setItem(getScopedKey(GROUPS_KEY), JSON.stringify(g));
 }
 function saveProductGroups(g) {
-  localStorage.setItem(PGROUPS_KEY, JSON.stringify(g));
+  localStorage.setItem(getScopedKey(PGROUPS_KEY), JSON.stringify(g));
 }
 
 let activeGroupFilter = "all";
@@ -445,6 +450,7 @@ let activeGroupFilter = "all";
 function initDashboardGroups() {
   const grid = document.getElementById("productsGrid");
   if (!grid) return;
+  dashboardUserScope = grid.dataset.userId || "global";
 
   renderGroupFilters();
   restoreCardGroups();

@@ -78,7 +78,8 @@
                 </form>
 
                 <?php $errors = App\Core\Session::getFlash('errors'); ?>
-                <?php if ($errors) { ?>
+
+                <?php if (is_array($errors)) { ?>
                     <div class="error-box">
                         <?php foreach ($errors as $field => $msg) { ?>
                             <p class="error-msg">
@@ -86,6 +87,13 @@
                                 <?= convert($msg[0]) ?>
                             </p>
                         <?php } ?>
+                    </div>
+                <?php } elseif (is_string($errors)) { ?>
+                    <div class="error-box">
+                        <p class="error-msg">
+                            <span class="error-prefix">[!] CRITICAL_ERROR:</span>
+                            <?= convert($errors ?? '') ?>
+                        </p>
                     </div>
                 <?php } ?>
 

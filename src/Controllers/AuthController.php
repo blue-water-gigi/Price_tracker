@@ -68,7 +68,11 @@ class AuthController
             $_POST['password']
         );
 
-        $authentification ? $this->redirect('/dashboard') : $this->redirect('/register');
+        if (!$authentification) {
+            Session::flash('errors', 'Email или username заняты');
+            $this->redirect('/register');
+        }
+        $this->redirect('/dashboard');
     }
 
     public function login(): void

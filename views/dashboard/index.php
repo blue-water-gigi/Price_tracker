@@ -64,7 +64,7 @@
 
         <div class="grid-label" id="gridLabel">[ ACTIVE_MONITORING_NODES ]</div>
 
-        <section class="products-grid" id="productsGrid">
+        <section class="products-grid" id="productsGrid" data-user-id="<?= (int) App\Core\Session::get('user_id') ?>">
 
             <?php if (empty($products)): ?>
                 <div class="empty-node">
@@ -183,7 +183,7 @@
         </div>
     </div>
 
-    <?php if ($user['city'] !== null) { ?>
+    <?php if (($user['city'] ?? null) === null) { ?>
         <div class="modal-overlay open" id="cityModal" aria-modal="true" role="dialog">
             <div class="modal-box city-modal-box">
 
