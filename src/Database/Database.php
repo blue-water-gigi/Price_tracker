@@ -36,8 +36,9 @@ class Database
         }
     }
 
-    private function __clone(): void {}
-
+    private function __clone(): void
+    {
+    }
 
     public static function getInstance(): self
     {
@@ -78,6 +79,20 @@ class Database
     public function countRows(): int
     {
         return $this->statement->rowCount();
+    }
+
+    public function beginTransaction(): void
+    {
+        $this->getPdo()->beginTransaction();
+    }
+
+    public function commit(): void
+    {
+        $this->getPdo()->commit();
+    }
+    public function rollback(): void
+    {
+        $this->getPdo()->rollBack();
     }
 }
 

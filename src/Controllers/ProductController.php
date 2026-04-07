@@ -12,8 +12,10 @@ use App\Database\Database;
 use App\Models\History;
 use App\Models\Alert;
 use App\Services\Parsers\ParserFactory;
+use App\Services\CreateTrackedProductService;
 use Exception;
 use InvalidArgumentException;
+use PDOException;
 
 class ProductController
 {
@@ -24,15 +26,24 @@ class ProductController
     private Store $store;
     private History $history;
     private Alert $alert;
+    private CreateTrackedProductService $transaction;
 
     public function __construct()
     {
         //todo make DI container for Controllers
+        $db = Database::getInstance();
         $this->validator = new Validator($_POST);
-        $this->product = new Product(Database::getInstance());
-        $this->store = new Store(Database::getInstance());
-        $this->history = new History(Database::getInstance());
-        $this->alert = new Alert(Database::getInstance());
+        $this->product = new Product($db);
+        $this->store = new Store($db);
+        $this->history = new History($db);
+        $this->alert = new Alert($db);
+        $this->transaction = new CreateTrackedProductService(
+            $this->product,
+            $this->store,
+            $this->alert,
+            $this->history,
+            $db
+        );
     }
 
     public function showAddForm(): void
@@ -118,21 +129,30 @@ class ProductController
 
         $user_id = (int) Session::get('user_id');
         $pending = Session::get('pending_product');
-        $alert_type = $_POST['alert_type'] ?? 'absolute';
-        $threshold_value = (float) ($_POST['threshold_value'] ?? 0);
-        $notif_channels = $_POST['notify_channels'] ?? [];
-        $check_interval = $_POST['check_interval'] ?? '60 minutes';
-        $target_price = (float) ($_POST['target_price'] ?? 0);
-
         if (!$pending) {
             $this->redirect('/dashboard');
         }
 
-        $store = $this->store->findOrCreate($pending['url']);
-        $product = $this->product->findOrCreate($pending['parsed'], $store['store_id'], $user_id, $pending['url']);
-        $this->history->create($product['product_id'], (float) $product['current_price']);
-        $this->alert->create($user_id, $product['product_id'], $alert_type, $threshold_value, $notif_channels, $check_interval, $target_price);
+        try {
+            $this->transaction->execute(
+                $user_id,
+                $pending['parsed'],
+                $pending['url'],
+                [
+                    'alert_type' => $_POST['alert_type'] ?? 'absolute',
+                    'threshold_value' => (float) ($_POST['threshold_value'] ?? 0),
+                    'notify_channels' => $_POST['notify_channels'] ?? [],
+                    'check_interval' => $_POST['check_interval'] ?? '60 minutes',
+                    'target_price' => (float) ($_POST['target_price'] ?? 0)
+                ]
+            );
+        } catch (Exception $e) {
+            error_log('Transaction failed' . $e->getMessage());
+            Session::flash('error', 'Ошибка при сохранении товара. Попробуйте снова.');
+            $this->redirect('/dashboard/add');
+        }
 
+        Session::set('pending_product', null);
         Session::flash('success', 'Товар успешно добавлен!');
         $this->redirect("/dashboard");
     }

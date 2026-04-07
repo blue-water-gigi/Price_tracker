@@ -28,8 +28,7 @@
                         <h3 class="product-title"><?= $pending['parsed']['name'] ?></h3>
                         <div class="price-info">
                             <div class="price-current">
-                                <?= number_format($pending['parsed']['price'], 0, '.', ' ') === '0' ? 'Нет в наличии' : number_format($pending['parsed']['price'], 0, '.', ' ');
-                                ?>
+                                <?= number_format($pending['parsed']['price'], 0, '.', ' ') === '0' ? 'Нет в наличии' : number_format($pending['parsed']['price'], 0, '.', ' ') ?>
                                 ₽
                             </div>
                             <div class="price-status awaiting">AWAITING_DATA...</div>
@@ -38,6 +37,12 @@
                 </div>
                 <p class="helper-text">// ПРЕДВАРИТЕЛЬНЫЙ ПРОСМОТР ОБЪЕКТА</p>
             </aside>
+
+            <?php if ($error !== '') { ?>
+                <div class="error-box" style="margin-bottom:1rem;">
+                    <div class="error-msg">[!] <?= convert($error) ?></div>
+                </div>
+            <?php } ?>
 
             <div class="terminal-window">
                 <div class="window-header">
@@ -91,6 +96,11 @@
                                                 placeholder="0" min="0" step="any" required>
                                             <span class="input-suffix" id="thresholdSuffix">₽</span>
                                         </div>
+                                    </div>
+
+                                    <!-- Превью процента в рублях -->
+                                    <div class="threshold-abs-preview" id="thresholdAbsPreview">
+                                        ≈ <span class="abs-value" id="thresholdAbsValue">0 ₽</span>
                                     </div>
                                 </div>
                             </div>

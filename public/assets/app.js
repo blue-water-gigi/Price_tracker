@@ -147,6 +147,19 @@ function setTelegramState(connected) {
 function saveField(field) {
   const statusEl = document.getElementById("status-" + field);
 
+  if (field === "username") {
+    const val = (document.getElementById("newUsername")?.value || "").trim();
+    if (!val) return showStatus(statusEl, "ERR: EMPTY_VALUE", "err");
+    // fetch('/api/settings/username', { method: 'POST', ... })
+    const upper = val.toUpperCase();
+    const cur = document.getElementById("currentUsername");
+    const disp = document.getElementById("displayName");
+    if (cur) cur.textContent = upper;
+    if (disp) disp.textContent = upper;
+    document.getElementById("newUsername").value = "";
+    showStatus(statusEl, "OK: USERNAME_UPDATED", "ok");
+  }
+
   if (field === "email") {
     const val = (document.getElementById("newEmail")?.value || "").trim();
     if (!val || !val.includes("@"))
@@ -158,6 +171,21 @@ function saveField(field) {
     if (disp) disp.textContent = val;
     document.getElementById("newEmail").value = "";
     showStatus(statusEl, "OK: EMAIL_UPDATED", "ok");
+  }
+
+  if (field === "city") {
+    const sel = document.getElementById("newCity");
+    const val = sel ? sel.value.trim() : "";
+    if (!val) return showStatus(statusEl, "ERR: CITY_NOT_SELECTED", "err");
+
+    // Отправляем форму города
+    const form = document.getElementById("citySettingsForm");
+    if (form) {
+      // Показываем статус после сабмита
+      showStatus(statusEl, "OK: REGION_UPDATED", "ok");
+      setTimeout(() => form.submit(), 600);
+    }
+    return;
   }
 
   if (field === "notif") {
@@ -292,6 +320,21 @@ function initAddPage() {
     updateTrack(range);
   }
 
+  /* превью процента в рублях */
+  const absPreview = document.getElementById("thresholdAbsPreview");
+  const absValue = document.getElementById("thresholdAbsValue");
+
+  function updateAbsPreview(val) {
+    if (!absPreview || !absValue) return;
+    if (currentType === "percent" && productPrice > 0) {
+      const rubles = Math.round((productPrice * parseFloat(val || 0)) / 100);
+      absValue.textContent = "≈ " + rubles.toLocaleString("ru-RU") + " ₽";
+      absPreview.classList.add("visible");
+    } else {
+      absPreview.classList.remove("visible");
+    }
+  }
+
   /* тип порога */
   document.querySelectorAll(".type-toggle-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
@@ -324,17 +367,20 @@ function initAddPage() {
       if (threshInput) threshInput.value = "";
       if (threshBadge) threshBadge.textContent = formatBadge(0, type);
       updateTrack(threshRange);
+      updateAbsPreview(0);
     });
   });
 
   /* слайдер порога */
   if (threshRange && threshInput && threshBadge) {
-    threshRange.addEventListener("input", () =>
-      syncFromRange(threshRange, threshInput, threshBadge, currentType),
-    );
-    threshInput.addEventListener("input", () =>
-      syncFromInput(threshInput, threshRange, threshBadge, currentType),
-    );
+    threshRange.addEventListener("input", () => {
+      syncFromRange(threshRange, threshInput, threshBadge, currentType);
+      updateAbsPreview(threshRange.value);
+    });
+    threshInput.addEventListener("input", () => {
+      syncFromInput(threshInput, threshRange, threshBadge, currentType);
+      updateAbsPreview(threshInput.value);
+    });
     updateTrack(threshRange);
   }
 
@@ -752,3 +798,21 @@ function initCityModal() {
 
 /* Вызываем при DOMContentLoaded */
 document.addEventListener("DOMContentLoaded", initCityModal);
+
+/* ── City preview — показывает выбранный регион до сохранения ─ */
+function updateCityPreview(selectEl) {
+  const row = document.getElementById("cityPreviewRow");
+  const preview = document.getElementById("cityPreview");
+  if (!row || !preview) return;
+
+  const val = selectEl.value;
+  if (val) {
+    preview.textContent = val;
+    row.style.display = "";
+    // Сбросить статус если юзер снова меняет
+    const statusEl = document.getElementById("status-city");
+    if (statusEl) statusEl.classList.remove("visible");
+  } else {
+    row.style.display = "none";
+  }
+}

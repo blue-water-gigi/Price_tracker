@@ -2994,3 +2994,67 @@ body::before {
   border-color: rgba(255, 58, 58, 0.35) !important;
   background: rgba(255, 58, 58, 0.08);
 }
+
+/* ── Settings city select ──────────────────────────────────── */
+.settings-city-select {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 11px 32px 11px 12px;
+  outline: none;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+  letter-spacing: 0.04em;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%2300c832' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.settings-city-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0, 255, 65, 0.08);
+}
+
+.settings-city-select option {
+  background: var(--bg-panel);
+  color: var(--text-primary);
+}
+
+/* ── City preview badge ────────────────────────────────────── */
+.city-preview-value {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.25);
+  animation: fade-up 0.2s ease both;
+}
+
+/* ── Percent-to-absolute preview ───────────────────────────── */
+.threshold-abs-preview {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  padding: 6px 10px;
+  border-left: 2px solid var(--accent-dim);
+  background: rgba(0, 255, 65, 0.03);
+  margin-top: 2px;
+}
+
+.threshold-abs-preview.visible {
+  display: block;
+}
+
+.threshold-abs-preview .abs-value {
+  color: var(--accent);
+  font-size: 0.85rem;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.25);
+}
