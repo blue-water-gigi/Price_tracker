@@ -28,7 +28,9 @@
                         <h3 class="product-title"><?= $product['name'] ?></h3>
                         <div class="price-info">
                             <div class="price-current">
-                                <?= number_format($product['current_price'], 0, '.', ' ') === '0' ? 'Нет в наличии' : number_format($product['current_price'], 0, '.', ' ') ?>
+                                <?= number_format($product['current_price'], 0, '.', ' ') === '0'
+                                    ? 'Нет в наличии'
+                                    : number_format($product['current_price'], 0, '.', ' ') ?>
                                 ₽
                             </div>
                             <div class="price-status awaiting">EDITING...</div>
@@ -44,40 +46,64 @@
                     <span class="window-title">SET_LIMITS_AND_NOTIFICATIONS.EXE</span>
                 </div>
 
+                <?php
+                $alertType = $product['alert_type'] ?? 'absolute';
+                $thresholdValue = (float) ($product['threshold_value'] ?? 0);
+                $targetPrice = (float) ($product['target_price'] ?? 0);
+                $currentPrice = (int) $product['current_price'];
+                // max слайдера: для процентного типа — 100, для абсолютного — цена товара
+                $threshMax = $alertType === 'percent' ? 100 : $currentPrice;
+                $threshPct = $threshMax > 0
+                    ? round(($thresholdValue / $threshMax) * 100, 2)
+                    : 0;
+                $targetPct = $currentPrice > 0
+                    ? round(($targetPrice / $currentPrice) * 100, 2)
+                    : 0;
+                ?>
+
                 <form action="/product/<?= $product['product_id'] ?>" method="POST" class="config-form"
-                    data-product-price="<?= (int) $product['current_price'] ?>">
+                    data-product-price="<?= $currentPrice ?>">
                     <input type="hidden" name="_method" value="PATCH">
                     <?= csrf() ?>
 
                     <div class="form-grid">
+
+                        <!-- ── Тип + пороговое значение ──────────────────── -->
                         <div class="threshold-block">
                             <label class="section-label">ТИП УВЕДОМЛЕНИЯ О СНИЖЕНИИ:</label>
 
                             <div class="type-toggle">
-                                <input type="button" value="₽ АБСОЛЮТНОЕ" class="type-toggle-btn active"
+                                <input type="button" value="₽ АБСОЛЮТНОЕ"
+                                    class="type-toggle-btn <?= $alertType === 'absolute' ? 'active' : '' ?>"
                                     data-type="absolute">
-                                <input type="button" value="% ОТНОСИТЕЛЬНОЕ" class="type-toggle-btn"
+                                <input type="button" value="% ОТНОСИТЕЛЬНОЕ"
+                                    class="type-toggle-btn <?= $alertType === 'percent' ? 'active' : '' ?>"
                                     data-type="percent">
                             </div>
 
-                            <input type="hidden" name="alert_type" id="thresholdType" value="absolute">
+                            <!-- hidden: тип читается JS при инициализации -->
+                            <input type="hidden" name="alert_type" id="thresholdType"
+                                value="<?= htmlspecialchars($alertType) ?>">
 
                             <div class="threshold-input-wrap visible" id="thresholdInputWrap">
                                 <div class="slider-block">
                                     <div class="slider-header">
                                         <span class="slider-label">ПОРОГОВОЕ ЗНАЧЕНИЕ:</span>
-                                        <span class="slider-value-badge" id="thresholdBadge">0 ₽</span>
+                                        <span class="slider-value-badge" id="thresholdBadge"></span>
                                     </div>
 
                                     <input type="range" id="thresholdRange" class="terminal-range" min="0"
-                                        max="<?= (int) $product['current_price'] ?>" value="0" step="1"
-                                        style="--val: 0%">
+                                        max="<?= $threshMax ?>" value="<?= $thresholdValue ?>"
+                                        step="<?= $alertType === 'percent' ? '0.1' : '1' ?>"
+                                        style="--val: <?= $threshPct ?>%">
 
                                     <div class="slider-ticks">
                                         <span>0</span>
-                                        <span
-                                            id="thresholdMax"><?= number_format((int) $product['current_price'], 0, '.', ' ') ?>
-                                            ₽</span>
+                                        <span id="thresholdMax">
+                                            <?= $alertType === 'percent'
+                                                ? '100 %'
+                                                : number_format($currentPrice, 0, '.', ' ') . ' ₽' ?>
+                                        </span>
                                     </div>
 
                                     <div class="slider-manual-row">
@@ -85,21 +111,29 @@
                                         <div class="input-wrapper" style="flex:1">
                                             <span class="prompt">></span>
                                             <input type="number" id="thresholdValue" name="threshold_value"
-                                                placeholder="0" min="0" step="any" required>
-                                            <span class="input-suffix" id="thresholdSuffix">₽</span>
+                                                placeholder="0" min="0" step="any" required
+                                                value="<?= $thresholdValue > 0 ? $thresholdValue : '' ?>">
+                                            <span class="input-suffix" id="thresholdSuffix">
+                                                <?= $alertType === 'percent' ? '%' : '₽' ?>
+                                            </span>
                                         </div>
+                                    </div>
+
+                                    <div class="threshold-abs-preview" id="thresholdAbsPreview">
+                                        ≈ <span class="abs-value" id="thresholdAbsValue">0 ₽</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- ── Интервал проверки ──────────────────────────── -->
                         <div class="input-group">
                             <label>ИНТЕРВАЛ ПРОВЕРКИ:</label>
                             <select name="check_interval" class="terminal-select">
-                                <option value="30 minutes">30 МИНУТ</option>
-                                <option value="60 minutes" selected>1 ЧАС</option>
-                                <option value="360 minutes">6 ЧАСОВ</option>
-                                <option value="1440 minutes">24 ЧАСА</option>
+                                <option value="30 minutes" <?= $product['check_interval'] === '00:30:00' ? 'selected' : '' ?>>30 МИНУТ</option>
+                                <option value="60 minutes" <?= $product['check_interval'] === '01:00:00' ? 'selected' : '' ?>>1 ЧАС</option>
+                                <option value="360 minutes" <?= $product['check_interval'] === '06:00:00' ? 'selected' : '' ?>>6 ЧАСОВ</option>
+                                <option value="1440 minutes" <?= $product['check_interval'] === '24:00:00' ? 'selected' : '' ?>>24 ЧАСА</option>
                             </select>
                         </div>
 
@@ -107,21 +141,23 @@
 
                     <div class="form-divider"></div>
 
+                    <!-- ── Целевая цена ───────────────────────────────────── -->
                     <div class="target-price-block">
                         <label class="section-label">ЦЕЛЕВАЯ ЦЕНА (КУПИТЬ КОГДА ≤ X):</label>
 
                         <div class="slider-block">
                             <div class="slider-header">
                                 <span class="slider-label">ЖЕЛАЕМАЯ ЦЕНА:</span>
-                                <span class="slider-value-badge" id="targetBadge">0 ₽</span>
+                                <span class="slider-value-badge" id="targetBadge"></span>
                             </div>
 
                             <input type="range" id="targetRange" class="terminal-range" min="0"
-                                max="<?= (int) $product['current_price'] ?>" value="0" step="1" style="--val: 0%">
+                                max="<?= $currentPrice ?>" value="<?= $targetPrice ?>" step="1"
+                                style="--val: <?= $targetPct ?>%">
 
                             <div class="slider-ticks">
                                 <span>0</span>
-                                <span><?= number_format((int) $product['current_price'], 0, '.', ' ') ?> ₽</span>
+                                <span><?= number_format($currentPrice, 0, '.', ' ') ?> ₽</span>
                             </div>
 
                             <div class="slider-manual-row">
@@ -129,7 +165,7 @@
                                 <div class="input-wrapper" style="flex:1">
                                     <span class="prompt">></span>
                                     <input type="number" id="targetValue" name="target_price" placeholder="0" min="0"
-                                        step="any">
+                                        step="any" value="<?= $targetPrice > 0 ? $targetPrice : '' ?>">
                                     <span class="input-suffix">₽</span>
                                 </div>
                             </div>
@@ -138,21 +174,25 @@
 
                     <div class="form-divider"></div>
 
+                    <!-- ── Каналы уведомлений ─────────────────────────────── -->
                     <div class="notification-settings">
                         <label class="section-label">КАНАЛЫ УВЕДОМЛЕНИЙ:</label>
                         <div class="checkbox-list">
                             <label class="custom-checkbox">
-                                <input type="checkbox" name="notify_channels[]" value="telegram" checked>
+                                <input type="checkbox" name="notify_channels[]" value="telegram"
+                                    <?= str_contains($product['notification_channels'] ?? '', 'telegram') ? 'checked' : '' ?>>
                                 <span class="checkmark"></span>
                                 TELEGRAM_BOT
                             </label>
                             <label class="custom-checkbox">
-                                <input type="checkbox" name="notify_channels[]" value="email">
+                                <input type="checkbox" name="notify_channels[]" value="email"
+                                    <?= str_contains($product['notification_channels'] ?? '', 'email') ? 'checked' : '' ?>>
                                 <span class="checkmark"></span>
                                 EMAIL_SYSTEM
                             </label>
                             <label class="custom-checkbox">
-                                <input type="checkbox" name="notify_channels[]" value="sms">
+                                <input type="checkbox" name="notify_channels[]" value="sms"
+                                    <?= str_contains($product['notification_channels'] ?? '', 'sms') ? 'checked' : '' ?>>
                                 <span class="checkmark"></span>
                                 PHONE_PUSH
                             </label>
@@ -161,7 +201,7 @@
 
                     <div class="form-actions-row">
                         <button type="submit" class="btn-execute">ПОДТВЕРДИТЬ</button>
-                        <a href="/dashboard/cancel" class="action-btn cancel-btn">ОТМЕНИТЬ</a>
+                        <a href="/dashboard" class="action-btn cancel-btn">ОТМЕНИТЬ</a>
                     </div>
 
                 </form>

@@ -285,7 +285,22 @@ function initAddPage() {
   const targetInput = document.getElementById("targetValue");
   const targetBadge = document.getElementById("targetBadge");
 
-  let currentType = "absolute";
+  /* ── Читаем начальные значения из DOM (edit-страница) ─── */
+  const initType =
+    threshHidden && threshHidden.value ? threshHidden.value : "absolute";
+  let currentType = initType;
+
+  /* Активируем нужную кнопку типа */
+  document.querySelectorAll(".type-toggle-btn").forEach((b) => {
+    b.classList.toggle("active", b.getAttribute("data-type") === currentType);
+  });
+
+  /* Если тип percent — меняем max слайдера и суффикс сразу */
+  if (currentType === "percent") {
+    if (threshRange) threshRange.max = 100;
+    if (threshSuffix) threshSuffix.textContent = "%";
+    if (threshMax) threshMax.textContent = "100 %";
+  }
 
   function formatBadge(val, type) {
     return type === "percent"
@@ -381,7 +396,16 @@ function initAddPage() {
       syncFromInput(threshInput, threshRange, threshBadge, currentType);
       updateAbsPreview(threshInput.value);
     });
+
+    /* Инициализация из существующего значения инпута (edit-страница) */
+    const initThreshVal = parseFloat(threshInput.value) || 0;
+    if (initThreshVal > 0) {
+      const clampedMax = parseFloat(threshRange.max) || productPrice;
+      threshRange.value = Math.min(initThreshVal, clampedMax);
+    }
+    threshBadge.textContent = formatBadge(threshInput.value || 0, currentType);
     updateTrack(threshRange);
+    updateAbsPreview(threshInput.value || 0);
   }
 
   /* слайдер целевой цены */
@@ -392,6 +416,16 @@ function initAddPage() {
     targetInput.addEventListener("input", () =>
       syncFromInput(targetInput, targetRange, targetBadge, "absolute"),
     );
+
+    /* Инициализация из существующего значения */
+    const initTargetVal = parseFloat(targetInput.value) || 0;
+    if (initTargetVal > 0) {
+      targetRange.value = Math.min(
+        initTargetVal,
+        parseFloat(targetRange.max) || productPrice,
+      );
+    }
+    targetBadge.textContent = formatBadge(targetInput.value || 0, "absolute");
     updateTrack(targetRange);
   }
 }
@@ -418,31 +452,26 @@ function showStatus(el, text, type) {
 
 const GROUPS_KEY = "pc_groups";
 const PGROUPS_KEY = "pc_product_groups";
-let dashboardUserScope = "global";
-
-function getScopedKey(baseKey) {
-  return `${baseKey}:${dashboardUserScope}`;
-}
 
 function getGroups() {
   try {
-    return JSON.parse(localStorage.getItem(getScopedKey(GROUPS_KEY)) || "{}");
+    return JSON.parse(localStorage.getItem(GROUPS_KEY) || "{}");
   } catch (e) {
     return {};
   }
 }
 function getProductGroups() {
   try {
-    return JSON.parse(localStorage.getItem(getScopedKey(PGROUPS_KEY)) || "{}");
+    return JSON.parse(localStorage.getItem(PGROUPS_KEY) || "{}");
   } catch (e) {
     return {};
   }
 }
 function saveGroups(g) {
-  localStorage.setItem(getScopedKey(GROUPS_KEY), JSON.stringify(g));
+  localStorage.setItem(GROUPS_KEY, JSON.stringify(g));
 }
 function saveProductGroups(g) {
-  localStorage.setItem(getScopedKey(PGROUPS_KEY), JSON.stringify(g));
+  localStorage.setItem(PGROUPS_KEY, JSON.stringify(g));
 }
 
 let activeGroupFilter = "all";
@@ -450,7 +479,6 @@ let activeGroupFilter = "all";
 function initDashboardGroups() {
   const grid = document.getElementById("productsGrid");
   if (!grid) return;
-  dashboardUserScope = grid.dataset.userId || "global";
 
   renderGroupFilters();
   restoreCardGroups();
