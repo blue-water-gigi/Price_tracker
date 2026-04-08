@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Notifications;
 
 use App\Services\EmailService;
+use Exception;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 class EmailNotification implements NotificationInterface
 {
@@ -13,11 +15,11 @@ class EmailNotification implements NotificationInterface
     {
     }
 
-    public function sendMsg(array $alert, array $product, float $newPrice): bool
+    public function sendMsg(array $alert, array $product, float $newPrice): NotificationResult
     {
-        $email = $alert['email'];
+        $email = $alert['email'] ?: null;
         if (empty($email)) {
-            return false;
+            return new NotificationResult('email', 'error', 'email is null or empty');
         }
 
         $oldPrice = number_format((float) $product['current_price'], 0, '.', ' ');
@@ -29,7 +31,12 @@ class EmailNotification implements NotificationInterface
             // . "<br>Снижение: {drop} ₽ / {percent}%"
             . "<br>🔗 <a href='{$product['url']}'>Ссылка на товар</a>";
 
-        $this->emailService->sendMessage($email, $message);
-        return true;
+        try {
+            $this->emailService->sendMessage($email, $message);
+            return new NotificationResult('email', 'success', "Notification send on email={$email}");
+        } catch (PHPMailerException $e) {
+            return new NotificationResult('email', 'error', $e->getMessage());
+        }
+
     }
 }

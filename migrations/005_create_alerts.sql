@@ -5,7 +5,7 @@ CREATE TABLE alerts (
     product_id INT NOT NULL REFERENCES products(product_id) ON DELETE CASCADE,
     type alert_type NOT NULL,
     threshold_value NUMERIC(10, 2),
-    notification_channels JSONB,
+    notification_channel VARCHAR(100),
     is_active BOOLEAN DEFAULT TRUE,
     last_triggered_at TIMESTAMP,
     target_price NUMERIC(10, 2),

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Notifications;
 
 use App\Services\TgService;
+use Exception;
 
 class TgNotification implements NotificationInterface
 {
@@ -12,11 +13,11 @@ class TgNotification implements NotificationInterface
     {
     }
 
-    public function sendMsg(array $alert, array $product, float $newPrice): bool
+    public function sendMsg(array $alert, array $product, float $newPrice): NotificationResult
     {
         $tg_chat_id = $alert['telegram_chat_id'] ?? null;
         if (!$tg_chat_id) {
-            return false;
+            return new NotificationResult('telegram', 'error', 'tg_chat_id is null');
         }
 
         $oldPrice = number_format((float) $product['current_price'], 0, '.', ' ');
@@ -28,7 +29,11 @@ class TgNotification implements NotificationInterface
             // . "\nСнижение: {drop} ₽ / {percent}%\n"
             . "\n🔗 <a href='{$product['url']}'>Ссылка на товар</a>";
 
-        $this->tgService->sendMessage($tg_chat_id, $message);
-        return true;
+        try {
+            $this->tgService->sendMessage($tg_chat_id, $message);
+            return new NotificationResult('telegram', 'success', "Notification send on id={$tg_chat_id}");
+        } catch (Exception $e) {
+            return new NotificationResult('telegram', 'error', $e->getMessage());
+        }
     }
 }

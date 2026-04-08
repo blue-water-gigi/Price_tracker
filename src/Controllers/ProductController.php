@@ -63,7 +63,6 @@ class ProductController
         $this->requireAuth('/login');
         $user_id = (int) Session::get('user_id');
         $product = $this->product->getProduct((int) $id, $user_id);
-
         if (empty($product)) {
             $this->redirect('/dashboard');
         }

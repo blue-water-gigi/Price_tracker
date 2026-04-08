@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Notifications;
 
 use App\Services\TgService;
+use App\Database\Database;
+use App\Models\NotificationLog;
 
 class NotificationService
 {
@@ -19,7 +21,8 @@ class NotificationService
         foreach ($selectedChannels as $channel) {
             if (isset($this->channels[$channel])) {
                 //realisation in check_prices.php
-                $this->channels[$channel]->sendMsg($alert, $product, $newPrice);
+                $result = $this->channels[$channel]->sendMsg($alert, $product, $newPrice);
+                new NotificationLog(Database::getInstance())->create($alert, $result);
             }
         }
     }

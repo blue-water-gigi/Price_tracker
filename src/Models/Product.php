@@ -99,16 +99,13 @@ class Product
 
     public function getProduct(int $product_id, int $user_id): array
     {
-        $fetched = $this->db->query("SELECT * FROM products 
+        return $this->db->query("SELECT p.*,a.type,a.threshold_value,a.notification_channels,a.is_active,a.target_price,a.check_interval
+        FROM products AS p 
+        INNER JOIN alerts AS a 
+        USING (product_id, user_id)
         WHERE product_id = :product_id AND user_id = :user_id", [
             'product_id' => $product_id,
             'user_id' => $user_id
-        ])->fetch() ?? [];
-
-        if (!$fetched) {
-            return [];
-        }
-
-        return $fetched;
+        ])->fetch() ?: [];
     }
 }
