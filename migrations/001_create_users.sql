@@ -9,5 +9,5 @@ CREATE TABLE users (
     email_verified_at TIMESTAMPTZ,
     city VARCHAR(255),
     tg_link_nonce VARCHAR(64),
-    tg_nonce_expires_at TIMESTAMPTZ;
+    tg_nonce_expires_at TIMESTAMPTZ
 );
