@@ -5,9 +5,9 @@ CREATE TABLE users (
     username VARCHAR(100) NOT NULL UNIQUE,
     telegram_chat_id BIGINT,
     phone VARCHAR(100) UNIQUE,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    email_verified_at TIMESTAMP,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    email_verified_at TIMESTAMPTZ,
     city VARCHAR(255),
     tg_link_nonce VARCHAR(64),
-    tg_nonce_expires_at TIMESTAMP;
+    tg_nonce_expires_at TIMESTAMPTZ;
 );

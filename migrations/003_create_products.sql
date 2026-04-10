@@ -6,8 +6,8 @@ CREATE TABLE products(
     url TEXT NOT NULL,
     current_price NUMERIC(10, 2) NOT NULL CHECK(current_price >= 0),
     image_url TEXT,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     currency VARCHAR(10) DEFAULT 'RUB',
     CONSTRAINT unique_user_url UNIQUE(user_id, url)
