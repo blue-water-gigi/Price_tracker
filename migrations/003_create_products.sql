@@ -4,7 +4,7 @@ CREATE TABLE products(
     store_id INT NOT NULL REFERENCES stores(store_id),
     user_id INT NOT NULL REFERENCES users(user_id),
     url TEXT NOT NULL,
-    current_price NUMERIC(10, 2) NOT NULL,
+    current_price NUMERIC(10, 2) NOT NULL CHECK(current_price >= 0),
     image_url TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP,
